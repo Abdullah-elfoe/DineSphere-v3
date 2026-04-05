@@ -127,7 +127,6 @@
 
 {% block forms %}
 <div class="drawer-overlay" id="drawerOverlay"></div>
-
 <div class="side-drawer" id="sideDrawer">
     <div class="drawer-header">
         <h2>New Registration</h2>
@@ -147,6 +146,23 @@
 </div>
 {% endblock %}
 
+{% block bottom_navigation %}
+ <button type="button" class="panel-btn">
+    <i class="fas fa-chair"></i> Add Seating Type
+</button>
+
+<button type="button" class="panel-btn">
+    <i class="fas fa-th-list"></i> View Seating Type
+</button>
+
+<button type="button" class="panel-btn ">
+    <i class="fas fa-table"></i> Add Table Type
+</button>
+
+<button type="button" class="panel-btn">
+    <i class="fas fa-eye"></i> View Table Type
+</button>
+{% endblock %}
 
 {% block scripts %}
 <script src="{% static 'Restaurants/js/stylishgrid.js' %}"></script>

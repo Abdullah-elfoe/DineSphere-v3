@@ -29,7 +29,6 @@
 </head>
 
 <body>
-
     <div class="sidebar">
         <div class="sidebar-top">
             <div class="sidebar-logo">⧲</div>
@@ -64,7 +63,7 @@
     </div>
 
 
-</body>
+<!-- </body> -->
 
 <div class="main-content">
     <div class="header">
@@ -133,12 +132,52 @@
     </div>
 </div>
 
-<!-- {% block bottom_navigation %}
-{% endblock %} -->
+
 
 {% block forms %}
 
 {% endblock %}
+
+<!-- <div id="actionPanel" class="action-panel" >
+    <div class="panel-content">
+        <div class="selection-info">
+            <span id="selectedCount">0</span> selected
+        </div>
+        
+        <div class="action-buttons">
+             <button type="button" class="panel-btn" id="deselectBtn">
+                <i class="fas fa-times"></i> Deselect
+            </button>
+       
+            
+            <button type="button" class="panel-btn btn-danger" id="deleteBtn">
+                <i class="fas fa-trash-alt"></i> Remove Staff
+            </button>
+        </div>
+    </div>
+</div>  -->
+
+<div id="actionPanel" class="action-panel show"> 
+    <div class="panel-content">
+        
+        <div class="selection-info">
+            <span id="selectedCount">0</span> Selected
+        </div>
+        
+        <div class="action-buttons">
+            {% block bottom_navigation %}
+            {% endblock %}
+
+            <button type="button" class="panel-btn" id="deselectBtn" disabled>
+                <i class="fas fa-times"></i> Deselect
+            </button>
+            
+            <!-- <button type="button" class="panel-btn btn-danger" id="deleteBtn" disabled>
+                <i class="fas fa-trash-alt"></i> Remove
+            </button> -->
+        </div>
+    </div>
+</div>
 </body>
 <script src="{% static 'Restaurants/js/base.js' %}"></script>
 {% block scripts %}

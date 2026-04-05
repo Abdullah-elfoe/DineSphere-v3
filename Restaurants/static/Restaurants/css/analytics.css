@@ -459,3 +459,73 @@
         .change-icon-up {
             color: var(--primary-color);
         }
+
+
+         /* --- Tab Visibility --- */
+.tab-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Config Form Styling --- */
+.config-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 5px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--sub-text);
+    text-transform: uppercase;
+}
+
+.input-group input, 
+.input-group select {
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+    border-color: var(--primary-color);
+}
+
+.save-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.save-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}

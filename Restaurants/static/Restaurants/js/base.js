@@ -210,3 +210,65 @@ const formData = {
 };
 triggerUpdate('tables', selectedId, formData);
 */
+
+document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.clickable-card');
+    const deselectBtn = document.getElementById('deselectBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const selectedCountText = document.getElementById('selectedCount');
+    const actionPanel = document.getElementById('actionPanel');
+    const actionButtons = document.querySelector('.action-buttons');
+
+    // Count visible buttons excluding the Deselect button to check for "Permanent" buttons
+    const permanentButtons = actionButtons.querySelectorAll('.panel-btn:not(#deselectBtn)').length;
+
+    const syncUI = () => {
+        const selectedCards = document.querySelectorAll('.clickable-card.selected');
+        const count = selectedCards.length;
+        
+        selectedCountText.innerText = count;
+
+        if (count > 0) {
+            // 1. Enable Buttons
+            deselectBtn.disabled = false;
+            if (deleteBtn) deleteBtn.disabled = false;
+            
+            // 2. Show panel if it's in "Floating" mode (No permanent buttons)
+            if (permanentButtons === 0) {
+                actionPanel.classList.add('show');
+            }
+        } else {
+            // 1. Disable Buttons
+            deselectBtn.disabled = true;
+            if (deleteBtn) deleteBtn.disabled = true;
+            
+            // 2. Hide panel if it's in "Floating" mode
+            if (permanentButtons === 0) {
+                actionPanel.classList.remove('show');
+            }
+        }
+    };
+
+    // Card Click Logic
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            const isAlreadySelected = card.classList.contains('selected');
+            cards.forEach(c => c.classList.remove('selected'));
+            if (!isAlreadySelected) card.classList.add('selected');
+            syncUI();
+        });
+    });
+
+    // Deselect Logic
+    deselectBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cards.forEach(c => c.classList.remove('selected'));
+        syncUI();
+    });
+
+    // Handle initial state: If permanent buttons exist, keep it shown
+    if (permanentButtons > 0) {
+        actionPanel.classList.add('show');
+    }
+    syncUI(); 
+});

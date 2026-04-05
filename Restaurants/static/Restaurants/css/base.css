@@ -289,3 +289,103 @@
     background-color: #7a1f1f; /* dark red */
     color: #f5b7b1;            /* light red text */
 }
+
+/* --- Floating Action Panel --- */
+
+:root {
+    --panel-bg: #ffffff;
+    --panel-border: #e2e8f0;
+    --primary-teal: hsl(173, 100%, 20%);
+    --danger-red: #ef4444;
+}
+
+.action-panel {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    /* Default hidden state (Slide down) */
+    transform: translateX(-50%) translateY(150%); 
+    
+    width: 90%;
+    max-width: 900px;
+    background: var(--white);
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    border-radius: 16px;
+    padding: 12px 24px;
+    z-index: 9999;
+    
+    /* Cubic bezier gives it that "pop" effect */
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Slide Up State */
+.action-panel.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Make sure buttons look right when disabled */
+.panel-btn:disabled {
+    opacity: 0.4;
+    filter: grayscale(1);
+    cursor: not-allowed;
+}
+.panel-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.selection-info {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-teal);
+    white-space: nowrap;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Button States */
+.panel-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    color: #64748b;
+
+}
+
+.panel-btn:hover:not(:disabled) {
+    background: #f1f5f9;
+}
+
+.panel-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+.panel-btn.btn-danger { color: var(--danger-red); }
+.panel-btn.btn-primary { 
+    background: var(--primary-teal); 
+    color: white; 
+    width: 150px;
+
+}
+
+/* Selection Highlighting for Cards */
+.clickable-card.selected {
+    border: 2px solid var(--primary-teal) !important;
+    background: #f0fdfa !important;
+}

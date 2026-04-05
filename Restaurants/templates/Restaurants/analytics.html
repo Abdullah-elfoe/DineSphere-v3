@@ -3,7 +3,7 @@
 {% block title %} Analytics {% endblock %}
 {% block name %} Analytics {% endblock %}
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'Restaurants/css/analytics.css' %}">
+<link rel="stylesheet" href="{% static 'Restaurants/css/analytics.css' %}">
 {% endblock %}
 {% block content %}
 <div class="main-grid">
@@ -17,10 +17,8 @@
         <div class="total-likes-chart">
             <div class="likes-line"></div>
             <svg viewBox="0 0 100 20" class="wave-svg" preserveAspectRatio="none">
-                <path d="M0,10 Q25,18 50,10 T100,10" stroke="rgba(255,255,255,0.7)" stroke-width="0.5"
-                    fill="none" />
-                <path d="M0,12 Q25,8 50,12 T100,12" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"
-                    fill="none" />
+                <path d="M0,10 Q25,18 50,10 T100,10" stroke="rgba(255,255,255,0.7)" stroke-width="0.5" fill="none" />
+                <path d="M0,12 Q25,8 50,12 T100,12" stroke="rgba(255,255,255,0.4)" stroke-width="0.5" fill="none" />
             </svg>
         </div>
         <div class="demographics">
@@ -39,68 +37,68 @@
         </div>
     </div>
 
-<div class="card pending-messages-card">
-    <div class="card-header">
-        <span class="card-title">Demographics</span>
-        <i class="fas fa-ellipsis-h card-options"></i>
-    </div>
-    <div class="card-large-value">{{ total_customers }}</div>
-    
-    <div class="demographics">
-        <div class="demographic-item">
-            <div class="circular-chart-container">
-                <svg viewBox="0 0 36 36" class="circular-chart teal">
-                    <path class="circle-bg" stroke="#f0f0f0" stroke-width="2" fill="none" d="M18 2.0845
+    <div class="card pending-messages-card">
+        <div class="card-header">
+            <span class="card-title">Demographics</span>
+            <i class="fas fa-ellipsis-h card-options"></i>
+        </div>
+        <div class="card-large-value">{{ total_customers }}</div>
+
+        <div class="demographics">
+            <div class="demographic-item">
+                <div class="circular-chart-container">
+                    <svg viewBox="0 0 36 36" class="circular-chart teal">
+                        <path class="circle-bg" stroke="#f0f0f0" stroke-width="2" fill="none" d="M18 2.0845
                     a 15.9155 15.9155 0 0 1 0 31.831
                     a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    
-                    <path class="circle" stroke="#10b981" stroke-width="2" 
-                        stroke-dasharray="{{ female_percent }}, 100"
-                        fill="none" d="M18 2.0845
+
+                        <path class="circle" stroke="#10b981" stroke-width="2"
+                            stroke-dasharray="{{ female_percent }}, 100" fill="none" d="M18 2.0845
                     a 15.9155 15.9155 0 0 1 0 31.831
                     a 15.9155 15.9155 0 0 1 0 -31.831" />
-                </svg>
-                <div class="ternary-icon"
-                    style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color: var(--ternary-color);">
-                    <i class="fas fa-users fa-2x"></i> </div>
+                    </svg>
+                    <div class="ternary-icon"
+                        style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color: var(--ternary-color);">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div class="demographic-item" style="flex-grow:1; margin-left:20px;">
-            <div class="pending-messages-list">
-                <div class="message-item">
-                    <div class="message-label-group">
-                        <div class="message-dot female"></div>
-                        <div class="message-info">
-                            <div class="label">Female ({{ female_count }})</div>
-                            <div class="value">{{ female_percent }}%</div>
+
+            <div class="demographic-item" style="flex-grow:1; margin-left:20px;">
+                <div class="pending-messages-list">
+                    <div class="message-item">
+                        <div class="message-label-group">
+                            <div class="message-dot female"></div>
+                            <div class="message-info">
+                                <div class="label">Female ({{ female_count }})</div>
+                                <div class="value">{{ female_percent }}%</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="message-item">
-                    <div class="message-label-group">
-                        <div class="message-dot male"></div>
-                        <div class="message-info">
-                            <div class="label">Male ({{ male_count }})</div>
-                            <div class="value">{{ male_percent }}%</div>
+                    <div class="message-item">
+                        <div class="message-label-group">
+                            <div class="message-dot male"></div>
+                            <div class="message-info">
+                                <div class="label">Male ({{ male_count }})</div>
+                                <div class="value">{{ male_percent }}%</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                {% if other_count > 0 %}
-                <div class="message-item">
-                    <div class="message-label-group">
-                        <div class="message-dot" style="background: var(--ternary-color);"></div>
-                        <div class="message-info">
-                            <div class="label">Other</div>
-                            <div class="value">{{ other_count }}</div>
+                    {% if other_count > 0 %}
+                    <div class="message-item">
+                        <div class="message-label-group">
+                            <div class="message-dot" style="background: var(--ternary-color);"></div>
+                            <div class="message-info">
+                                <div class="label">Other</div>
+                                <div class="value">{{ other_count }}</div>
+                            </div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>
-</div>
 
     <!-- <div class="card post-stats-card">
         <div class="stats-top-half">
@@ -172,18 +170,16 @@
         </div>
     </div> -->
 
-    <div class="card post-activity-section">
-        <div class="table-tabs">
-            <div class="table-tab active">Logs</div>
-            <!-- <div class="table-tab">Logs <span class="user-tab-count">2</span></div> -->
-            <div class="table-tab">Configs</div>
+  <div class="card post-activity-section">
+    <div class="table-tabs">
+        <div class="table-tab active" onclick="switchTab('logs', this)">Logs</div>
+        <div class="table-tab" onclick="switchTab('configs', this)">Configs</div>
+    </div>
 
-        </div>
-
+    <div id="tab-logs" class="tab-content">
         <div class="post-table">
             <div class="post-table-row">
-                <div class="table-img"><img src="https://via.placeholder.com/48x48.png?text=1"
-                        alt="Post thumbnail"></div>
+                <div class="table-img"><img src="https://via.placeholder.com/48x48.png?text=1" alt=""></div>
                 <div class="table-post-info-cell">
                     <div class="table-post-title">What is the value for your company</div>
                     <div class="table-post-sub">Post number 2</div>
@@ -194,72 +190,69 @@
                     <span class="value">7.k</span>
                 </div>
                 <div class="percentage-change change-icon-down">
-                    <i class="fas fa-arrow-down change-icon-down"></i>
+                    <i class="fas fa-arrow-down"></i>
                     <span>4%</span>
                 </div>
                 <i class="fas fa-ellipsis-h table-label-icon card-options"></i>
             </div>
-
-            <div class="post-table-row">
-                <div class="table-img"><img src="https://via.placeholder.com/48x48.png?text=2"
-                        alt="Post thumbnail"></div>
-                <div class="table-post-info-cell">
-                    <div class="table-post-title">How to sell stuff?</div>
-                    <div class="table-post-sub">Post Number 1</div>
-                </div>
-                <div class="table-tag"
-                    style="background-color:var(--secondary-color); color:var(--ternary-color);">Blog</div>
-                <div class="table-icon-label-group">
-                    <i class="far fa-heart table-label-icon"></i>
-                    <span class="value">3.k</span>
-                </div>
-                <div class="percentage-change change-icon-up">
-                    <i class="fas fa-arrow-up change-icon-up"></i>
-                    <span>5%</span>
-                </div>
-                <i class="fas fa-ellipsis-h table-label-icon card-options"></i>
             </div>
-
-            <div class="post-table-row">
-                <div class="table-img"><img src="https://via.placeholder.com/48x48.png?text=3"
-                        alt="Post thumbnail"></div>
-                <div class="table-post-info-cell">
-                    <div class="table-post-title">New Product</div>
-                    <div class="table-post-sub">Post Number 3</div>
-                </div>
-                <div class="table-tag persona-tag" style="color:var(--ternary-color);">Product</div>
-                <div class="table-icon-label-group">
-                    <i class="far fa-heart table-label-icon"></i>
-                    <span class="value">2.k</span>
-                </div>
-                <div class="percentage-change change-icon-up">
-                    <i class="fas fa-arrow-up change-icon-up"></i>
-                    <span>6%</span>
-                </div>
-                <i class="fas fa-ellipsis-h table-label-icon card-options"></i>
-            </div>
-
-            <div class="post-table-row last">
-                <div class="table-img"><img src="https://via.placeholder.com/48x48.png?text=4"
-                        alt="Post thumbnail"></div>
-                <div class="table-post-info-cell">
-                    <div class="table-post-title">What do you do today?</div>
-                    <div class="table-post-sub">Post Number 4</div>
-                </div>
-                <div class="table-tag persona-tag"
-                    style="background-color: var(--secondary-color); color: var(--ternary-color);">Persona</div>
-                <div class="table-icon-label-group">
-                    <i class="far fa-heart table-label-icon"></i>
-                    <span class="value">1.k</span>
-                </div>
-                <div class="percentage-change change-icon-up">
-                    <i class="fas fa-arrow-up change-icon-up"></i>
-                    <span>8%</span>
-                </div>
-                <i class="fas fa-ellipsis-h table-label-icon card-options"></i>
-            </div>
-        </div>
     </div>
 
+    <div id="tab-configs" class="tab-content" style="display: none;">
+        <form class="config-form">
+            <div class="form-row">
+                <div class="input-group">
+                    <label>System Name</label>
+                    <input type="text" placeholder="Dinesphere Analytics">
+                </div>
+                <div class="input-group">
+                    <label>Update Frequency</label>
+                    <select>
+                        <option>Real-time</option>
+                        <option>Every 5 mins</option>
+                        <option>Hourly</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>Notification Email</label>
+                <input type="email" placeholder="admin@dinesphere.com">
+            </div>
+
+            <div class="form-footer">
+                <button type="button" class="save-btn">Save Changes</button>
+            </div>
+        </form>
+    </div>
 </div>
+</div>
+
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function switchTab(tabName, element) {
+    // 1. Remove active class from all tabs
+    document.querySelectorAll('.table-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // 2. Add active class to clicked tab
+    element.classList.add('active');
+    
+    // 3. Hide all content sections
+    document.getElementById('tab-logs').style.display = 'none';
+    document.getElementById('tab-configs').style.display = 'none';
+    
+    // 4. Show the selected section
+    if (tabName === 'logs') {
+        document.getElementById('tab-logs').style.display = 'block';
+    } else {
+        document.getElementById('tab-configs').style.display = 'block';
+    }
+}
+</script>
 {% endblock %}
