@@ -11,17 +11,22 @@ from .Services import (
     add_table,
     perform_dynamic_update,
     getAnalytics,
-    isStaff
-    )
-from UsersHandling.services import add_restaurant_staff, remove_restaurant_staff
+    isStaff,
+)
+from UsersHandling.services import (
+    add_restaurant_staff,
+    remove_restaurant_staff,
+    get_current_restaurant_staff,
+)
 from .forms import TableForm, TableSizeForm, RestaurantForm, SpecialDayForm, ReviewForm
 from .models import Restaurant, Table, SpecialDay, Review, SeatingType
 import json
 from UsersHandling.models import RestaurantStaff
+from .services.logger import log_event
+from .services.parser import get_user_logs, format_logs_to_text
 
 
 # Create your views here.
-
 
 
 def registration(request):
@@ -44,62 +49,81 @@ def registration(request):
             create_restaurant_for_user(request.user, data)
 
             messages.success(request, "Restaurant registered successfully!")
+            log_event(
+                request.user.username,
+                {
+                    "action": "registered_restaurant",
+                    "details": f"Registered First restaurant {data['name']}",
+                }
+            )
             return redirect("")
 
         except Exception as e:
             messages.error(request, str(e))
-            print(" i am here" ,str(e))
+            print(" i am here", str(e))
             return redirect("/")
     seating_types = SeatingType.objects.all()
-    return render(request, "Restaurants/registration.html", {"seatingtype": seating_types})
+    return render(
+        request, "Restaurants/registration.html", {"seatingtype": seating_types}
+    )
 
 
 def staff_management(request):
     # 1. Get the current restaurant ID from the session
-    restaurant_id = request.session.get('selected_restaurant_id')
-    
+    restaurant_id = request.session.get("selected_restaurant_id")
 
     if isStaff(request.user):
         staff = RestaurantStaff.objects.get(user=request.user)
         restaurant_id = staff.restaurant.id
-        
+
     if not restaurant_id:
-        
+
         messages.error(request, "Please select a restaurant first.")
-        return redirect('/') # Or wherever your restaurant selector is
+        return redirect("/")  # Or wherever your restaurant selector is
 
     # --- HANDLE POST (Add Staff) ---
     if request.method == "POST":
         username = request.POST.get("username")
         add_restaurant_staff(request, username)
-        return redirect('/business/staff-management/')
+        log_event(
+            request.user.username,
+            {
+                "action": "added_staff",
+                "details": f"Added staff member {username} to restaurant ID {restaurant_id}",
+            },
+        )
+        return redirect("/business/staff-management/")
 
     # --- HANDLE GET (List Staff) ---
     # We use select_related('user') to get the names/images without extra DB hits
     staff_members = RestaurantStaff.objects.filter(
         restaurant_id=restaurant_id
-    ).select_related('user')
+    ).select_related("user")
 
-    context = {
-        "workers": staff_members,
-        "current_restaurant_id": restaurant_id
-    }
-    
+    context = {"workers": staff_members, "current_restaurant_id": restaurant_id}
+
     return render(request, "Restaurants/staff_management.html", context)
 
+
 def analytics(request):
-    if RestaurantStaff.objects.filter(user=request.user).first().role != 'OWNER':
+    if RestaurantStaff.objects.filter(user=request.user).first().role != "OWNER":
         print("Not an owner, redirecting...")
-        return redirect('/business/staff-management/') 
-    restaurants = Restaurant.objects.filter(restaurantstaff__in=RestaurantStaff.objects.filter(user=request.user)).distinct()
-    restaurant_id = request.session.get('selected_restaurant_id')
+        return redirect("/business/staff-management/")
+    restaurants = Restaurant.objects.filter(
+        restaurantstaff__in=RestaurantStaff.objects.filter(user=request.user)
+    ).distinct()
+    restaurant_id = request.session.get("selected_restaurant_id")
     context = getAnalytics(restaurant_id)
     context["restaurants"] = restaurants
-    
+
+    restaurant_staff = get_current_restaurant_staff(restaurant_id)
+    context["all_staff"] = restaurant_staff
+
     return render(request, "Restaurants/analytics.html", context)
 
+
 def tables(request):
-    restaurant_id = request.session['selected_restaurant_id']
+    restaurant_id = request.session["selected_restaurant_id"]
     restaurant = Restaurant.objects.get(id=restaurant_id)
     if request.method == "GET":
         form = TableForm(restaurant=restaurant)
@@ -108,26 +132,36 @@ def tables(request):
         form, _ = add_table(request, restaurant_id)
         if form.is_valid():
             obj = form.save(commit=False)  # not yet in DB
-            obj.restaurant = restaurant    # extra field injection
-            obj.save()     
+            obj.restaurant = restaurant  # extra field injection
+            obj.save()
             messages.success(request, "Table added successfully!")
+            log_event(
+            request.user.username,
+            {
+                "action": "added_table",
+                "details": f"Added table {obj.name} (ID: {obj.id}) to restaurant ID {restaurant_id}",
+            },
+        )
         else:
-            messages.error(request, "Failed to add table. Please check the form for errors.")
+            messages.error(
+                request, "Failed to add table. Please check the form for errors."
+            )
         return redirect("/business/tables/")
 
 
 def holidays(request):
-    restaurant_id = request.session['selected_restaurant_id']
+    restaurant_id = request.session["selected_restaurant_id"]
     restaurant = Restaurant.objects.get(id=restaurant_id)
 
     if request.method == "GET":
         form = SpecialDayForm()
         special_days = SpecialDay.objects.filter(restaurant=restaurant)
 
-        return render(request, "Restaurants/holidays.html", {
-            "form": form,
-            "special_days": special_days
-        })
+        return render(
+            request,
+            "Restaurants/holidays.html",
+            {"form": form, "special_days": special_days},
+        )
 
     elif request.method == "POST":
         form = SpecialDayForm(request.POST)
@@ -136,12 +170,19 @@ def holidays(request):
             obj = form.save(commit=False)
             obj.restaurant = restaurant  # 🔥 REQUIRED
             obj.save()
-
+            log_event(
+            request.user.username,
+            {
+                "action": "added_holiday",
+                "details": f"Added holiday {obj.name} (ID: {obj.id}) to restaurant ID {restaurant_id}",
+            },
+            )
             messages.success(request, "Holiday added successfully!")
         else:
             messages.error(request, "Failed to add holiday.")
 
         return redirect("/business/holidays/")
+
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -150,17 +191,16 @@ from .forms import ReviewForm
 
 
 def reviews(request):
-    restaurant_id = request.session['selected_restaurant_id']
+    restaurant_id = request.session["selected_restaurant_id"]
     restaurant = Restaurant.objects.get(id=restaurant_id)
 
     if request.method == "GET":
         form = ReviewForm()
         reviews = Review.objects.filter(restaurant=restaurant)
 
-        return render(request, "Restaurants/reviews.html", {
-            "form": form,
-            "reviews": reviews
-        })
+        return render(
+            request, "Restaurants/reviews.html", {"form": form, "reviews": reviews}
+        )
 
     elif request.method == "POST":
         form = ReviewForm(request.POST)
@@ -177,6 +217,7 @@ def reviews(request):
 
         return redirect("/business/reviews/")
 
+
 def business_info(request):
     if request.method == "GET":
         form = RestaurantForm()
@@ -189,44 +230,49 @@ def business_info(request):
             restaurant = form.save()
 
             # 🔥 optional: store in session (since you're using it elsewhere)
-            request.session['selected_restaurant_id'] = restaurant.id
+            request.session["selected_restaurant_id"] = restaurant.id
             RestaurantStaff.objects.create(
-                user=request.user,          # current logged-in user
+                user=request.user,  # current logged-in user
                 restaurant=restaurant,
-                role='OWNER',
-                is_premium=False  # or True if needed
+                role="OWNER",
+                is_premium=False,  # or True if needed
             )
 
             messages.success(request, "Restaurant added successfully!")
+            log_event(
+                request.user.username,
+                {
+                    "action": "added_restaurant",
+                    "details": f"Added restaurant {restaurant.name} (ID: {restaurant.id})",
+                },
+            )
         else:
             messages.error(request, "Failed to add restaurant.")
 
         return redirect("/business/business-info/")
 
-def reservations(request):
-    restaurant = Restaurant.objects.get(id=request.session['selected_restaurant_id'])
-    all_reservations = Booking.objects.filter(restaurant=restaurant).all()
-    return render(request, "Restaurants/reservations.html", {"reservations": all_reservations})
 
+def reservations(request):
+    restaurant = Restaurant.objects.get(id=request.session["selected_restaurant_id"])
+    all_reservations = Booking.objects.filter(restaurant=restaurant).all()
+    return render(
+        request, "Restaurants/reservations.html", {"reservations": all_reservations}
+    )
 
 
 def switch_business(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        business_id = data.get('business_id')
-        
+        business_id = data.get("business_id")
+
         # MUST MATCH the Context Processor key: "selected_restaurant_id"
-        request.session['selected_restaurant_id'] = business_id
-        
+        request.session["selected_restaurant_id"] = business_id
+
         # Get the name to send back to JS
         restaurant = Restaurant.objects.filter(id=business_id).first()
         name = restaurant.name if restaurant else "Unknown"
-        
-        return JsonResponse({
-            'status': 'success', 
-            'new_name': name
-        })
-    
+
+        return JsonResponse({"status": "success", "new_name": name})
 
 
 # -------------------------------
@@ -243,7 +289,7 @@ def markfinish(request):
         except Exception as e:
             messages.error(request, str(e))
 
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+    return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
 # -------------------------------
@@ -260,7 +306,7 @@ def markcancel(request):
         except Exception as e:
             messages.error(request, str(e))
 
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+    return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
 # -------------------------------
@@ -274,7 +320,7 @@ def hide(request):
         review.hide_from_display()
         messages.success(request, "Review hidden from display.")
 
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+    return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
 # -------------------------------
@@ -288,10 +334,7 @@ def unhide(request):
         review.add_to_display()
         messages.success(request, "Review is now visible.")
 
-    return redirect(request.META.get('HTTP_REFERER', '/'))
-
-
-
+    return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
 # --- Update Functions ---
@@ -300,22 +343,46 @@ def updateBusiness(request, id):
         instance = get_object_or_404(Restaurant, id=id)
         data = json.loads(request.body)
         perform_dynamic_update(instance, data)
+        log_event(
+        request.user.username,
+        {
+            "action": "updated_business",
+            "details": f"Updated business {instance.name} (ID: {instance.id})",
+        },
+        )
         return JsonResponse({"status": "success", "message": "Business updated"})
+
 
 def updateTables(request, id):
     if request.method == "POST":
         instance = get_object_or_404(Table, id=id)
         data = json.loads(request.body)
         perform_dynamic_update(instance, data)
+        log_event(
+            request.user.username,
+            {
+                "action": "updated_table",
+                "details": f"Updated table {instance.name} (ID: {instance.id}) in restaurant ID {instance.restaurant.id}",
+            },
+            )
         return JsonResponse({"status": "success", "message": "Table updated"})
     return redirect("/business/tables")
+
 
 def updateHolidays(request, id):
     if request.method == "POST":
         instance = get_object_or_404(SpecialDay, id=id)
         data = json.loads(request.body)
         perform_dynamic_update(instance, data)
+        log_event(
+        request.user.username,
+        {
+            "action": "updated_holiday",
+            "details": f"Updated holiday {instance.name} (ID: {instance.id}) in restaurant ID {instance.restaurant.id}",
+        },
+        )
         return JsonResponse({"status": "success", "message": "Holiday updated"})
+
 
 # --- Delete Functions ---
 def deleteBusiness(request, id):
@@ -325,12 +392,14 @@ def deleteBusiness(request, id):
         # return JsonResponse({"status": "success", "message": "Business deleted"})
         return redirect("/business/business-info/")
 
+
 def deleteTables(request, id):
     if request.method == "POST":
         instance = get_object_or_404(Table, id=id)
         instance.delete()
         # return JsonResponse({"status": "success", "message": "Table deleted"})
         return redirect("/business/tables/")
+
 
 def deleteHolidays(request, id):
     if request.method == "POST":
@@ -339,3 +408,19 @@ def deleteHolidays(request, id):
         # return JsonResponse({"status": "success", "message": "Holiday deleted"})
         return redirect("/business/holidays/")
 
+
+
+
+def download_logs(request):
+    if not request.user.is_authenticated:
+        return HttpResponse("Unauthorized", status=401)
+
+    username = request.user.username
+
+    logs = get_user_logs(username)
+    formatted_text = format_logs_to_text(logs)
+
+    response = HttpResponse(formatted_text, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="{username}_logs.txt"'
+
+    return response

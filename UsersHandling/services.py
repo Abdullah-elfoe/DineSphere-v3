@@ -100,3 +100,15 @@ def verify_username(request):
     print(user_exists)
     
     return JsonResponse({'exists': user_exists})
+
+
+
+def get_current_restaurant_staff(restaurant_id):
+    
+    return RestaurantStaff.objects.filter(
+        restaurant_id=restaurant_id,
+        role='STAFF'
+    ).select_related('user')
+
+
+
