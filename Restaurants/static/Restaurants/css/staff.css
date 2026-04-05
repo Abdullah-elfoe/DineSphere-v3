@@ -1,0 +1,271 @@
+/* Drawer Form Enhancements */
+.drawer-form .input-group {
+    display: flex;
+    align-items: center;
+    position: relative;
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 4px 8px;
+    transition: all 0.3s ease;
+}
+
+.drawer-form .input-group:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: white;
+}
+
+.drawer-form input#username {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    padding: 10px;
+    outline: none;
+    font-size: 0.95rem;
+    color: #1f2937;
+}
+
+/* The Verify Button */
+#verifyBtn {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#verifyBtn.hidden {
+    display: none; /* Keeps it out of the DOM flow until needed */
+}
+
+/* Status Message Styling */
+.status-msg {
+    font-size: 0.8rem;
+    margin-top: 6px;
+    margin-left: 4px;
+    font-weight: 500;
+    min-height: 1.2rem;
+}
+
+.status-msg.success { color: #10b981; }
+.status-msg.error { color: #ef4444; }
+.status-msg.checking { color: #6b7280; font-style: italic; }
+
+/* --- Modern User Card Components --- */
+
+.item-card.clickable-card {
+    position: relative;
+    padding: 30px 20px;
+    text-align: center;
+    background: var(--white);
+    border: 1px solid #edf2f7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    transition: var(--transition);
+}
+
+/* Top Decorative Bar */
+.card-accent-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+/* Avatar Styling */
+.user-avatar-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.user-main-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--secondary-color);
+    padding: 3px;
+    background: var(--white);
+}
+
+.role-badge {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: white;
+    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.owner-bg { background: var(--ternary-color); }
+.staff-bg { background: var(--primary-color); }
+
+/* Text Details */
+.user-display-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 10px 0 5px 0;
+    color: var(--text-color);
+}
+
+.user-contact {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 15px;
+}
+
+/* Stats Row */
+.user-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    padding-top: 15px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    color: #9ca3af;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.premium-gold {
+    color: var(--ternary-color);
+    font-size: 1.2rem;
+}
+
+/* --- Selection State (For Delete/Edit) --- */
+.item-card.selected {
+    background: var(--secondary-color);
+    border-color: var(--primary-color);
+    transform: scale(0.98);
+}
+
+.selection-overlay {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.item-card.selected .selection-overlay {
+    opacity: 1;
+}
+
+/* --- List View Overrides (The "Table Row" look) --- */
+
+.list-view .item-card.clickable-card {
+    flex-direction: row;        /* Change from vertical to horizontal */
+    padding: 12px 25px;         /* Slimmer padding for rows */
+    text-align: left;           /* Align text to the left */
+    justify-content: flex-start;
+    gap: 30px;                  /* Space between avatar, info, and stats */
+    min-height: 80px;
+}
+
+/* 1. Reset the Accent Bar for List Mode */
+.list-view .card-accent-bar {
+    width: 6px;                 /* Make it a side-border instead of top-bar */
+    height: 100%;
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+/* 2. Scale down the Avatar for the row */
+.list-view .user-avatar-wrapper {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;             /* Don't let the avatar get squished */
+}
+
+/* 3. Re-position the Role Badge in List Mode */
+.list-view .role-badge {
+    left: auto;
+    right: -10px;
+    bottom: -5px;
+    transform: none;
+    font-size: 0.55rem;
+    padding: 2px 8px;
+}
+
+/* 4. Adjust the Details Layout */
+.list-view .user-details {
+    display: flex;
+    flex-direction: row;        /* Put Name and Email on one line */
+    align-items: center;
+    flex-grow: 1;               /* Take up remaining space */
+    gap: 40px;
+}
+
+.list-view .user-display-name {
+    margin: 0;
+    font-size: 1rem;
+    min-width: 180px;           /* Keep names aligned */
+}
+
+.list-view .user-contact {
+    margin: 0;
+    flex-grow: 1;
+}
+
+/* 5. Clean up the Stats Row */
+.list-view .user-stats {
+    width: auto;
+    border-top: none;           /* Remove the divider line from Grid View */
+    padding: 0;
+    margin-left: auto;          /* Push ID and Crown to the far right */
+    gap: 25px;
+}
+
+/* 6. Fix Selection Overlay for List */
+.list-view .selection-overlay {
+    position: relative;         /* Move it into the row flow */
+    top: auto;
+    right: auto;
+    margin-left: 10px;
+}
+
+
+@media (max-width: 768px) {
+    .list-view .user-details {
+        flex-direction: column; /* Stack name/email on mobile */
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .list-view .user-stats {
+        display: none; /* Hide ID on mobile list to save space */
+    }
+}

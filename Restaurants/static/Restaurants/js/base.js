@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const trigger = document.getElementById('business-trigger');
     const list = document.getElementById('business-list');
     const nameDisplay = document.getElementById('current-business-name');
-
-    trigger.addEventListener('click', (e) => {
+    try {
+            trigger.addEventListener('click', (e) => {
         e.stopPropagation();
         list.classList.toggle('show');
     });
@@ -90,6 +90,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return cookieValue;
     }
+        
+    } catch (error) {
+        console.log("MOYE MOYE");
+        
+    }
+
+
     const logoutBtn = document.getElementById('dashboard-logout');
     const modal = document.getElementById('confirmModal');
     const modalOverlay = document.getElementById('modalOverlay');

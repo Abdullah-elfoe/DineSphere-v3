@@ -1,5 +1,6 @@
 from .models import Restaurant
 from UsersHandling.models import RestaurantStaff
+from Restaurants.Services import isStaff
 
 def owner_context(request):
     """
@@ -11,6 +12,17 @@ def owner_context(request):
         return {}
 
     user = request.user
+
+    if isStaff(user):
+        staff_profile = RestaurantStaff.objects.filter(user=user).first()
+        restaurant = staff_profile.restaurant if staff_profile else None
+        selected_id = restaurant.id if restaurant else None
+        request.session['selected_restaurant_id'] = selected_id
+        return {
+        "CP__OwnerProfile": user,  # keep original user (important)
+        "CP__Restaurant": restaurant,
+        "CP__Selected": restaurant,
+    }
 
     # Get ONLY OWNER roles for this user
     owner_staff = RestaurantStaff.objects.filter(
@@ -36,7 +48,7 @@ def owner_context(request):
     if not selected_restaurant and len(owners_restaurants) != 0:
         selected_restaurant = owners_restaurants.first()
         selected_id = Restaurant.objects.filter(name=selected_restaurant.name, city=selected_restaurant.city, address=selected_restaurant.address).first().id
-        print(selected_restaurant, selected_id)
+        # print(selected_restaurant, selected_id)
         request.session.get("selected_restaurant_id")
         request.session['selected_restaurant_id'] = selected_id
 

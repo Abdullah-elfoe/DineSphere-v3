@@ -1,4 +1,5 @@
 {% load static %}
+{% load auth_tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,9 +34,13 @@
         <div class="sidebar-top">
             <div class="sidebar-logo">⧲</div>
             <div class="nav-links">
+
+                {% if request.user|is_owner %}
                 <a href="/business/" class="nav-item {% if request.path == '/business/' %}active{% endif %}" title="Analytics">
                     <i class="fas fa-chart-line"></i>
                 </a>
+                {% endif %}
+
                 <a href="/business/reservations" class="nav-item {% if request.path == '/business/reservations' %}active{% endif %}" title="Reservations">
                     <i class="fas fa-calendar-check"></i>
                 </a>
@@ -68,6 +73,7 @@
         </div>
         <div class="header-controls">
             <p>Welcome {{ CP__OwnerProfile }}!</p>
+            {% if request.user|is_owner %}
             <div class="dropdown-wrapper">
                 <div class="dropdown-menu" id="business-trigger">
                     <i class="fab fa-briefcase dropdown-icon"></i>
@@ -76,7 +82,7 @@
                     </span>
                     <i class="fas fa-chevron-down dropdown-icon"></i>
                 </div>
-
+                
                 <ul class="dropdown-list" id="business-list">
                     {% for restaurant in CP__Restaurants %}
                     {% if restaurant.id != CP__Selected.id %}
@@ -85,7 +91,10 @@
                     {% endfor %}
                 </ul>
             </div>
+            {% endif %}
+            {% if request.user|is_owner %}
             <a href="/business/business-info"><i class="fas fa-briefcase fullscreen-icon c-pointer"></i></a>
+            {% endif %}
            <a href="/business/staff-management"><i class="fas fa-user-tie fullscreen-icon c-pointer"></i></a>
 
 

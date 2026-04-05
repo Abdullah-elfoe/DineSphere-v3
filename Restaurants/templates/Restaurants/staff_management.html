@@ -1,3 +1,181 @@
 {% extends "Restaurants/base.html" %}
+{% load static %}
 {% block title %} Staff {% endblock %}
 {% block name %} Staff Management {% endblock %}
+
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Restaurants/css/stylishgrid.css' %}">
+<link rel="stylesheet" href="{% static 'Restaurants/css/drawerform.css' %}">
+<link rel="stylesheet" href="{% static 'Restaurants/css/staff.css' %}">
+{% endblock %}
+{% block buttons %}
+<div class="action-card btn-add" id="open-drawer">
+    <div class="icon-box">
+        <i class="fas fa-plus"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Add New</span>
+        <span class="card-value">$560K</span>
+    </div>
+    <i class="fas fa-circle-notch progress-mini"></i>
+</div>
+<div class="action-card btn-delete">
+    <div class="icon-box">
+        <i class="fas fa-trash-alt"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Fire</span>
+        <span class="card-value">$150K</span>
+    </div>
+    <i class="fas fa-bolt progress-mini"></i>
+</div>
+<div class="action-card btn-update">
+    <div class="icon-box">
+        <i class="fas fa-eye"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Access Logs</span>
+        <span class="card-value">$185K</span>
+    </div>
+    <i class="fas fa-chart-line progress-mini"></i>
+</div>
+
+
+<div class="action-card btn-view">
+    <div class="icon-box">
+        <i class="fas fa-sync-alt"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Refresh</span>
+        <span class="card-value">$742K</span>
+    </div>
+    <i class="fas fa-pie-chart progress-mini"></i>
+</div>
+{% endblock %}
+
+{% block model_name %}
+holidays
+{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="filter-panel">
+        <div class="filter-group">
+            <span class="filter-label">View</span>
+            <div class="view-switcher">
+                <button class="view-btn active" id="gridBtn" title="Grid View">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="view-btn" id="listBtn" title="List View">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">Label</span>
+            <select class="custom-select">
+                <option value="all">All Styles</option>
+                <option value="adventure">Adventure</option>
+                <option value="iconic">Iconic</option>
+                <option value="modern">Modern</option>
+            </select>
+        </div>
+
+        <div class="filter-group toggle-filter">
+            <label class="checkbox-wrapper">
+                <input type="checkbox" checked> Available
+            </label>
+            <label class="checkbox-wrapper">
+                <input type="checkbox"> Budget (Cheap)
+            </label>
+        </div>
+
+        <div class="filter-group">
+            <input type="text" class="custom-select" placeholder="Search items..." style="width: 200px;">
+        </div>
+    </header>
+
+    <main class="data-grid grid-view" id="mainGrid">
+        {% for worker in workers %}
+<div class="item-card clickable-card" 
+     data-label="adventure" 
+     data-id="{{ worker.id }}"
+     data-user="{{ worker.user.username }}">
+
+    <div class="card-accent-bar"></div>
+
+    <div class="user-avatar-wrapper">
+        <img src="{{ worker.user.image.url|default:'/static/default-avatar.png' }}" 
+             alt="{{ worker.user.username }}" 
+             class="user-main-avatar">
+        <span class="role-badge {% if worker.role == 'OWNER' %}owner-bg{% else %}staff-bg{% endif %}">
+            {{ worker.role }}
+        </span>
+    </div>
+
+    <div class="user-details">
+        <h3 class="user-display-name">{{ worker.user.get_full_name|default:worker.user.username }}</h3>
+        <p class="user-contact">{{ worker.user.email }}</p>
+        
+        <div class="user-stats">
+            <div class="stat-item">
+                <span class="stat-label">Type</span>
+                <span class="stat-value">
+                    {% if worker.is_premium %}
+                        Premium
+                    {% else %}
+                        Standard
+                    {% endif %}
+                </span>
+            </div>
+            {% if worker.is_premium %}
+            <div class="stat-item">
+                <i class="fas fa-crown premium-gold"></i>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="selection-overlay">
+        <i class="fas fa-check-circle"></i>
+    </div>
+</div>
+{% endfor %}
+    </main>
+</div>
+
+{% endblock %}
+
+{% block forms %}
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<div class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+        <h2>New Registration</h2>
+        <button class="close-drawer" id="closeDrawer">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <form id="drawerForm" class="drawer-form" method="post" >
+                {% csrf_token %}
+        <div class="input-group">
+        <input type="text" id="username" name="username" placeholder="Enter username..." autocomplete="off">
+        <button type="button" id="verifyBtn" class="hidden">Verify</button>
+        </div>
+    <div id="statusMsg" class="status-msg"></div>
+        <div class="drawer-footer">
+            <button type="button" class="btn-secondary" id="clearForm">Clear</button>
+            <button type="submit" class="btn-primary">Add Staff</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'Restaurants/js/stylishgrid.js' %}"></script>
+<script src="{% static 'Restaurants/js/drawerform.js' %}"></script>
+<script src="{% static 'Restaurants/js/staff.js' %}"></script>
+{% endblock %}
+

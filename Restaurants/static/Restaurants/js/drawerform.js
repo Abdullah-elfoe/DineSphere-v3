@@ -96,7 +96,8 @@ if (card && seatingCheckboxes.length > 0) {
     });
 }
     },
-    reviews: (form, data) => {}
+    reviews: (form, data) => {},
+
 
 };
 

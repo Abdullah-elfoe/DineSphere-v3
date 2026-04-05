@@ -10,8 +10,10 @@ from .Services import (
     add_tabletype,
     add_table,
     perform_dynamic_update,
-    getAnalytics
+    getAnalytics,
+    isStaff
     )
+from UsersHandling.services import add_restaurant_staff, remove_restaurant_staff
 from .forms import TableForm, TableSizeForm, RestaurantForm, SpecialDayForm, ReviewForm
 from .models import Restaurant, Table, SpecialDay, Review, SeatingType
 import json
@@ -52,11 +54,43 @@ def registration(request):
     return render(request, "Restaurants/registration.html", {"seatingtype": seating_types})
 
 
-
 def staff_management(request):
-    return render(request, "Restaurants/staff_management.html")
+    # 1. Get the current restaurant ID from the session
+    restaurant_id = request.session.get('selected_restaurant_id')
+    
+
+    if isStaff(request.user):
+        staff = RestaurantStaff.objects.get(user=request.user)
+        restaurant_id = staff.restaurant.id
+        
+    if not restaurant_id:
+        
+        messages.error(request, "Please select a restaurant first.")
+        return redirect('/') # Or wherever your restaurant selector is
+
+    # --- HANDLE POST (Add Staff) ---
+    if request.method == "POST":
+        username = request.POST.get("username")
+        add_restaurant_staff(request, username)
+        return redirect('/business/staff-management/')
+
+    # --- HANDLE GET (List Staff) ---
+    # We use select_related('user') to get the names/images without extra DB hits
+    staff_members = RestaurantStaff.objects.filter(
+        restaurant_id=restaurant_id
+    ).select_related('user')
+
+    context = {
+        "workers": staff_members,
+        "current_restaurant_id": restaurant_id
+    }
+    
+    return render(request, "Restaurants/staff_management.html", context)
 
 def analytics(request):
+    if RestaurantStaff.objects.filter(user=request.user).first().role != 'OWNER':
+        print("Not an owner, redirecting...")
+        return redirect('/business/staff-management/') 
     restaurants = Restaurant.objects.filter(restaurantstaff__in=RestaurantStaff.objects.filter(user=request.user)).distinct()
     restaurant_id = request.session.get('selected_restaurant_id')
     context = getAnalytics(restaurant_id)
@@ -304,3 +338,4 @@ def deleteHolidays(request, id):
         instance.delete()
         # return JsonResponse({"status": "success", "message": "Holiday deleted"})
         return redirect("/business/holidays/")
+

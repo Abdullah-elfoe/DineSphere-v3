@@ -256,3 +256,10 @@ def getAnalytics(restaurant_id):
         'revenue': revenue_data['total_revenue'] or 0,
         'stats': order_stats,
     }
+
+
+def isStaff(user):
+    return RestaurantStaff.objects.filter(
+        user=user,
+        role="STAFF"
+    ).exists()
