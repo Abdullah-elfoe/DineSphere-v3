@@ -1,0 +1,265 @@
+{% extends "Restaurants/base.html" %}
+{% load static %}
+{% block title %} Analytics {% endblock %}
+{% block name %} Analytics {% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'Restaurants/css/analytics.css' %}">
+{% endblock %}
+{% block content %}
+<div class="main-grid">
+
+    <div class="card total-likes-card">
+        <div class="card-header">
+            <span class="card-title">Total Revenew</span>
+            <i class="fas fa-ellipsis-h card-options"></i>
+        </div>
+        <div class="total-likes-value">$ {{revenue}} </div>
+        <div class="total-likes-chart">
+            <div class="likes-line"></div>
+            <svg viewBox="0 0 100 20" class="wave-svg" preserveAspectRatio="none">
+                <path d="M0,10 Q25,18 50,10 T100,10" stroke="rgba(255,255,255,0.7)" stroke-width="0.5"
+                    fill="none" />
+                <path d="M0,12 Q25,8 50,12 T100,12" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"
+                    fill="none" />
+            </svg>
+        </div>
+        <div class="demographics">
+            <div class="demographic-item">
+                <div class="demo-label">Finished Orders</div>
+                <div class="demo-value">{{stats.finished_count}}</div>
+            </div>
+            <div class="demographic-item">
+                <div class="demo-label">Pending Orders</div>
+                <div class="demo-value">{{stats.pending_count}}</div>
+            </div>
+            <div class="demographic-item">
+                <div class="demo-label">Cancelled Orders</div>
+                <div class="demo-value">{{stats.cancelled_count}}</div>
+            </div>
+        </div>
+    </div>
+
+<div class="card pending-messages-card">
+    <div class="card-header">
+        <span class="card-title">Demographics</span>
+        <i class="fas fa-ellipsis-h card-options"></i>
+    </div>
+    <div class="card-large-value">{{ total_customers }}</div>
+    
+    <div class="demographics">
+        <div class="demographic-item">
+            <div class="circular-chart-container">
+                <svg viewBox="0 0 36 36" class="circular-chart teal">
+                    <path class="circle-bg" stroke="#f0f0f0" stroke-width="2" fill="none" d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    
+                    <path class="circle" stroke="#10b981" stroke-width="2" 
+                        stroke-dasharray="{{ female_percent }}, 100"
+                        fill="none" d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="ternary-icon"
+                    style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color: var(--ternary-color);">
+                    <i class="fas fa-users fa-2x"></i> </div>
+            </div>
+        </div>
+        
+        <div class="demographic-item" style="flex-grow:1; margin-left:20px;">
+            <div class="pending-messages-list">
+                <div class="message-item">
+                    <div class="message-label-group">
+                        <div class="message-dot female"></div>
+                        <div class="message-info">
+                            <div class="label">Female ({{ female_count }})</div>
+                            <div class="value">{{ female_percent }}%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message-item">
+                    <div class="message-label-group">
+                        <div class="message-dot male"></div>
+                        <div class="message-info">
+                            <div class="label">Male ({{ male_count }})</div>
+                            <div class="value">{{ male_percent }}%</div>
+                        </div>
+                    </div>
+                </div>
+                {% if other_count > 0 %}
+                <div class="message-item">
+                    <div class="message-label-group">
+                        <div class="message-dot" style="background: var(--ternary-color);"></div>
+                        <div class="message-info">
+                            <div class="label">Other</div>
+                            <div class="value">{{ other_count }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- <div class="card post-stats-card">
+        <div class="stats-top-half">
+            <div class="card-header">
+                <span class="card-title">Post Stats</span>
+                <i class="fas fa-ellipsis-h card-options"></i>
+            </div>
+            <div class="post-stats-graph-container">
+                <div class="bar-chart-visual">
+                    <div class="stat-bar" style="height: 60px;"></div>
+                    <div class="stat-bar" style="height: 80px;"></div>
+                    <div class="stat-bar" style="height: 70px;"></div>
+                    <div class="stat-bar active" style="height: 120px;"></div>
+                    <div class="stat-bar" style="height: 100px;"></div>
+                    <div class="stat-bar" style="height: 90px;"></div>
+                    <div class="stat-bar" style="height: 70px;"></div>
+                </div>
+                <svg viewBox="0 0 100 20" class="graph-wave" preserveAspectRatio="none">
+                    <path d="M0,15 Q15,10 30,15 T60,15 T90,15" stroke="rgba(16,185,129,0.3)" stroke-width="0.75"
+                        fill="none" />
+                </svg>
+            </div>
+            <div class="days-of-week">
+                <span>M</span> <span>T</span> <span>W</span> <span
+                    style="font-weight:700; color:var(--text-color);">T</span> <span>F</span> <span>S</span>
+                <span>S</span>
+            </div>
+        </div>
+
+        <div class="completed-posts-mini-card">
+            <div class="mini-card-icon-value">
+                <div class="icon-box"
+                    style="background-color:var(--pink-light-card); color:var(--red-notification);"> <i
+                        class="fas fa-check-circle"></i>
+                </div>
+                <div class="label-group">
+                    <div class="label">Completed Posts</div>
+                    <div class="sub-label">Current Week</div>
+                </div>
+            </div>
+            <div class="mini-card-large-value">874</div>
+        </div>
+    </div> 
+ -->
+
+    <!-- <div class="card teal-card small-card">
+        <div class="icon-box">
+            <i class="far fa-comment-dots"></i>
+        </div>
+        <div class="small-card-content">
+            <div class="value">3.k</div>
+            <div class="label">Comments</div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div> -->
+
+    <!-- <div class="card teal-card small-card">
+        <div class="icon-box">
+            <i class="far fa-thumbs-up"></i>
+        </div>
+        <div class="small-card-content">
+            <div class="value">10.k</div>
+            <div class="label">Links Shared</div>
+        </div>
+        <div class="progress-bar" style="background-color: var(--secondary-color);">
+            <div class="progress-fill" style="background-color: var(--primary-color);"></div>
+        </div>
+    </div> -->
+
+    <div class="card post-activity-section">
+        <div class="table-tabs">
+            <div class="table-tab active">Logs</div>
+            <!-- <div class="table-tab">Logs <span class="user-tab-count">2</span></div> -->
+            <div class="table-tab">Configs</div>
+
+        </div>
+
+        <div class="post-table">
+            <div class="post-table-row">
+                <div class="table-img"><img src="https://via.placeholder.com/48x48.png?text=1"
+                        alt="Post thumbnail"></div>
+                <div class="table-post-info-cell">
+                    <div class="table-post-title">What is the value for your company</div>
+                    <div class="table-post-sub">Post number 2</div>
+                </div>
+                <div class="table-tag">Company</div>
+                <div class="table-icon-label-group">
+                    <i class="far fa-heart table-label-icon"></i>
+                    <span class="value">7.k</span>
+                </div>
+                <div class="percentage-change change-icon-down">
+                    <i class="fas fa-arrow-down change-icon-down"></i>
+                    <span>4%</span>
+                </div>
+                <i class="fas fa-ellipsis-h table-label-icon card-options"></i>
+            </div>
+
+            <div class="post-table-row">
+                <div class="table-img"><img src="https://via.placeholder.com/48x48.png?text=2"
+                        alt="Post thumbnail"></div>
+                <div class="table-post-info-cell">
+                    <div class="table-post-title">How to sell stuff?</div>
+                    <div class="table-post-sub">Post Number 1</div>
+                </div>
+                <div class="table-tag"
+                    style="background-color:var(--secondary-color); color:var(--ternary-color);">Blog</div>
+                <div class="table-icon-label-group">
+                    <i class="far fa-heart table-label-icon"></i>
+                    <span class="value">3.k</span>
+                </div>
+                <div class="percentage-change change-icon-up">
+                    <i class="fas fa-arrow-up change-icon-up"></i>
+                    <span>5%</span>
+                </div>
+                <i class="fas fa-ellipsis-h table-label-icon card-options"></i>
+            </div>
+
+            <div class="post-table-row">
+                <div class="table-img"><img src="https://via.placeholder.com/48x48.png?text=3"
+                        alt="Post thumbnail"></div>
+                <div class="table-post-info-cell">
+                    <div class="table-post-title">New Product</div>
+                    <div class="table-post-sub">Post Number 3</div>
+                </div>
+                <div class="table-tag persona-tag" style="color:var(--ternary-color);">Product</div>
+                <div class="table-icon-label-group">
+                    <i class="far fa-heart table-label-icon"></i>
+                    <span class="value">2.k</span>
+                </div>
+                <div class="percentage-change change-icon-up">
+                    <i class="fas fa-arrow-up change-icon-up"></i>
+                    <span>6%</span>
+                </div>
+                <i class="fas fa-ellipsis-h table-label-icon card-options"></i>
+            </div>
+
+            <div class="post-table-row last">
+                <div class="table-img"><img src="https://via.placeholder.com/48x48.png?text=4"
+                        alt="Post thumbnail"></div>
+                <div class="table-post-info-cell">
+                    <div class="table-post-title">What do you do today?</div>
+                    <div class="table-post-sub">Post Number 4</div>
+                </div>
+                <div class="table-tag persona-tag"
+                    style="background-color: var(--secondary-color); color: var(--ternary-color);">Persona</div>
+                <div class="table-icon-label-group">
+                    <i class="far fa-heart table-label-icon"></i>
+                    <span class="value">1.k</span>
+                </div>
+                <div class="percentage-change change-icon-up">
+                    <i class="fas fa-arrow-up change-icon-up"></i>
+                    <span>8%</span>
+                </div>
+                <i class="fas fa-ellipsis-h table-label-icon card-options"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,526 @@
+{% extends "Core/base.html" %}
+{% load static %}
+{% load range_tags %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'Reservations/css/carousel.css' %}">
+<link rel="stylesheet" href="{% static 'Reservations/css/registration.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .reservation-container {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 30px;
+        padding: 20px;
+        max-width: 1300px;
+        margin: auto;
+    }
+
+    /* Navigation Styling */
+    .seating-nav {
+        display: flex;
+        gap: 10px;
+        margin: 20px 0;
+        overflow-x: auto;
+    }
+
+    .nav-item {
+        padding: 10px 20px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        white-space: nowrap;
+        transition: 0.3s;
+        color: #4b5563;
+    }
+
+    .nav-item.active {
+        background: #111827;
+        color: #fff;
+    }
+
+    .seating-content {
+        display: none;
+    }
+
+    .seating-content.active {
+        display: block;
+    }
+
+    /* Transparency for left sections */
+    .transparent-section {
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 10px 0;
+    }
+
+    .section-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Up Left: Booking Header */
+    .booking-header h1 {
+        font-size: 2.5rem;
+        margin: 0;
+        font-weight: 900;
+    }
+
+    .booking-strip {
+        display: flex;
+        gap: 15px;
+        margin: 25px 0;
+    }
+
+    .input-rect {
+        flex: 1;
+        background: #fff;
+        border: 1px solid #ddd;
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    }
+
+    .input-rect span {
+        display: block;
+        font-size: 0.75rem;
+        color: #777;
+        margin-bottom: 5px;
+    }
+
+    /* Table Selection Grid */
+    .table-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+        margin: 15px 0 30px 0;
+    }
+
+    .table-item {
+        background: #fff;
+        border: 2px solid #eee;
+        padding: 15px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+        text-align: center;
+    }
+
+    .table-item:hover {
+        border-color: #111827;
+    }
+
+    .table-item.selected {
+        background-color: #111827;
+        color: #fff;
+        border-color: #111827;
+    }
+
+    /* Interactive Stars */
+    .star-rating {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #ddd;
+        display: inline-block;
+    }
+
+    .star-rating .fa-star.active {
+        color: gold;
+    }
+
+    #reviewText {
+        width: 100%;
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-family: inherit;
+    }
+
+    .post-review-btn {
+        margin-top: 10px;
+        background: #111827;
+        color: white;
+        padding: 8px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    /* Summary Card Sticky */
+    .summary-sticky {
+        position: sticky;
+        top: 20px;
+        border: 1.5px solid #111827;
+    }
+
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        margin: 15px 0;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="reservation-container">
+
+    <div class="section-card up-left transparent-section">
+        <div class="booking-header">
+            <div class="bhai-bhai">
+                <button onclick="window.history.back()" class="back-button">&#x21B6;</button>
+                <h1 id="r-name">{{ restaurant.name }}</h1>
+
+            </div>
+            <p>{{ restaurant.title }}</p>
+        </div>
+
+        <div class="booking-strip">
+            <div class="input-rect">
+                <span>Reservation Date</span>
+                <div id="dateBtn" style="font-weight: bold; cursor:pointer;">Select Date</div>
+            </div>
+            <div class="input-rect">
+                <span>Start Hour</span>
+                <input type="time" id="startTimeBtn" style="border:none; font-weight:bold; width:100%;">
+            </div>
+            <div class="input-rect">
+                <span>Stay Duration</span>
+                <select id="durationHrs" onchange="updateSummary()" style="border:none; font-weight:bold; width:100%;">
+                    <option value="1">1 Hour</option>
+                    <option value="2">2 Hours</option>
+                    <option value="3">3 Hours</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="seating-nav">
+            {% for seating_name in tables.keys %}
+            <div class="nav-item {% if forloop.first %}active{% endif %}"
+                onclick="openSeating(event, '{{ seating_name|slugify }}')">
+                {{ seating_name|title }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="seating-wrapper">
+            {% for seating_name, table_list in tables.items %}
+            <div id="{{ seating_name|slugify }}" class="seating-content {% if forloop.first %}active{% endif %}">
+                <div class="table-grid">
+                    {% for t in table_list %}
+                    <div class="table-item" data-id="{{ t.id }}" data-price="{{ t.price }}" data-cap="{{ t.capacity }}"
+                        onclick="toggleTableSelection(this)">
+                        <p><strong>{{ t.name }}</strong></p>
+                        <p><i class="fas fa-users"></i> {{ t.capacity }} Seats</p>
+                        <p><strong>${{ t.price }}</strong>/hr</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="section-card up-right" style="padding:0; overflow:hidden;">
+        <img src="{{ restaurant.image.url }}" style="width:100%; height:450px; object-fit:cover;">
+    </div>
+
+    <form action="/reservations/{{restaurant.name|space_to_value:'_'}}/postReview" method="post">
+
+        <div class="section-card middle-left transparent-section">
+            <h3>Rate your experience</h3>
+            <div class="star-rating" id="star-container">
+                <i class="fas fa-star" data-value="1"></i>
+                <i class="fas fa-star" data-value="2"></i>
+                <i class="fas fa-star" data-value="3"></i>
+                <i class="fas fa-star" data-value="4"></i>
+                <i class="fas fa-star" data-value="5"></i>
+            </div>
+            <input type="hidden" id="selected-rating" value="0">
+            <textarea id="reviewText" rows="3" placeholder="Tell us about your visit..."></textarea>
+
+            {% if request.user.is_authenticated %}
+            <button type="button" class="post-review-btn" id="submitReviewBtn">Post Review</button>
+            {% else %}
+            <button type="button" class="post-review-btn" onclick='alert("Please log in to post a review.")'>Post
+                Review</button>
+            {% endif %}
+        </div>
+    </form>
+
+    <div class="section-card middle-right transparent-section">
+        <h3>Booking Summary</h3>
+        <hr>
+        <div class="summary-line">
+            <span>Selected Capacity</span>
+            <span id="sum-cap">0</span>
+        </div>
+        <div class="summary-line">
+            <span>Hourly Rate (Combined)</span>
+            <span id="sum-hourly">$0.00</span>
+        </div>
+        <div class="summary-line" style="font-size: 1.3rem; color: #27ae60;">
+            <span>Total Amount</span>
+            <span id="sum-total">$0.00</span>
+        </div>
+        <p style="font-size: 0.8rem; color: #888; margin-bottom: 20px;">* Includes 5-minute table lock guarantee</p>
+        <button class="reserve-lock-btn"
+            style="width: 100%; background: #111827; color: white; padding: 18px; border-radius: 10px; font-weight: bold; border: none; cursor: pointer;"
+            onclick="submitReservation()">
+            RESERVE AND LOCK
+        </button>
+    </div>
+
+    <div class="section-card bottom-left">
+        <h3>About {{ restaurant.name }}</h3>
+        <p style="color: #555; line-height: 1.7;">{{ restaurant.about_restaurant }}</p>
+    </div>
+
+    <div class="section-card bottom-right" style="background-color: #27ae60;">
+        <h2 class="reviews-title">What Our Guests Say</h2>
+
+        <div class="carousel-container">
+            <div class="carousel-track" id="testimonial-track">
+                {% if not reviews.count > 0 %}
+                <p>No Testimonails to show</p>
+                {% else %}
+                {% for review in reviews %}
+                {% if review.on_display %}
+                <div class="testimonial-slide">
+                    <div class="testimonial-header">
+                        <img src="https://placehold.co/60x60/ffffff/000000?text={{testimonial.creator_name|initials}}"
+                            alt="Photo" class="testimonial-img">
+                        <span class="testimonial-name">{{review.user}}</span>
+                    </div>
+                    <i class="fas fa-quote-left quote-icon"></i>
+                    <p class="testimonial-content">{{review.comment|truncatechars:150}}</p>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+
+
+            </div>
+        </div>
+        {% if reviews.count > 1 %}
+        <div class="carousel-dots" id="carousel-dots"></div>
+        {% endif %}
+    </div>
+
+</div>
+
+<form id="finalForm" action="." method="POST" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="date" id="form-date">
+    <input type="hidden" name="start_time" id="form-start">
+    <input type="hidden" name="end_time" id="form-end">
+    <input type="hidden" name="required_capacity" id="form-cap">
+    <input type="hidden" name="price" id="form-price">
+    <div id="table-ids-container"></div>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // Tabbed Navigation Logic
+    function openSeating(evt, seatingId) {
+        var i, content, navlinks;
+        content = document.getElementsByClassName("seating-content");
+        for (i = 0; i < content.length; i++) {
+            content[i].classList.remove("active");
+        }
+        navlinks = document.getElementsByClassName("nav-item");
+        for (i = 0; i < navlinks.length; i++) {
+            navlinks[i].classList.remove("active");
+        }
+        document.getElementById(seatingId).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    // 1. Initialize Date Picker
+    flatpickr("#dateBtn", {
+        minDate: "today",
+        onChange: function (selectedDates, dateStr) {
+            document.getElementById('dateBtn').innerText = dateStr;
+            document.getElementById('form-date').value = dateStr;
+        }
+    });
+
+    // 2. Table Selection Logic
+    let selectedTables = [];
+
+    function toggleTableSelection(el) {
+        el.classList.toggle('selected');
+        const tableId = el.dataset.id;
+
+        if (el.classList.contains('selected')) {
+            selectedTables.push({
+                id: tableId,
+                price: parseFloat(el.dataset.price),
+                cap: parseInt(el.dataset.cap)
+            });
+        } else {
+            selectedTables = selectedTables.filter(t => t.id !== tableId);
+        }
+        updateSummary();
+    }
+
+    function updateSummary() {
+        let totalHourly = 0;
+        let totalCap = 0;
+        selectedTables.forEach(t => {
+            totalHourly += t.price;
+            totalCap += t.cap;
+        });
+
+        const hours = parseInt(document.getElementById('durationHrs').value);
+        const finalTotal = totalHourly * hours;
+
+        document.getElementById('sum-cap').innerText = totalCap;
+        document.getElementById('sum-hourly').innerText = "$" + totalHourly.toFixed(2);
+        document.getElementById('sum-total').innerText = "$" + finalTotal.toFixed(2);
+        document.getElementById('form-cap').value = totalCap;
+    }
+
+    // 3. Star Rating Logic
+    const stars = document.querySelectorAll('#star-container i');
+    stars.forEach(star => {
+        star.addEventListener('click', function () {
+            const val = this.dataset.value;
+            document.getElementById('selected-rating').value = val;
+            stars.forEach(s => {
+                s.classList.toggle('active', s.dataset.value <= val);
+            });
+        });
+    });
+
+    // function submitReview() {
+    //     const rating = document.getElementById('selected-rating').value;
+    //     const text = document.getElementById('reviewText').value;
+    //     if (rating == 0) return alert("Please select a star rating");
+    //     alert("Review Submitted! (Rating: " + rating + ")");
+    // }
+    document.addEventListener("DOMContentLoaded", function () {
+        initTestimonialCarousel();
+        const submitBtn = document.getElementById("submitReviewBtn");
+
+        if (submitBtn) {
+            submitBtn.addEventListener("click", function () {
+                const rating = document.getElementById("selected-rating").value;
+                const text = document.getElementById("reviewText").value;
+
+                if (rating == 0) return alert("Please select a star rating");
+
+                // Build POST data
+                const formData = new FormData();
+                formData.append("rating", rating);
+                formData.append("text", text);
+
+
+                // Get CSRF token from cookie or hidden input
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                fetch(`/reservation/{{restaurant.name|space_to_value:"_"}}/postReview/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error("Network response was not OK");
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data);
+
+                        if (data.success) {
+                            alert("Review submitted successfully!");
+                            // Optionally clear form
+                            document.getElementById("reviewText").value = "";
+                            document.getElementById("selected-rating").value = 0;
+                            // Optionally update the UI dynamically with new review
+                        } else {
+                            alert("Error: " + (data.error || "Unable to submit review"));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("Something went wrong while submitting review");
+                    });
+            });
+        }
+    });
+
+    // 4. Submit Reservation
+    function submitReservation() {
+        const startTime = document.getElementById('startTimeBtn').value;
+        const date = document.getElementById('form-date').value;
+
+        if (!date || !startTime || selectedTables.length === 0) {
+            return alert("Please select Date, Time, and at least one Table.");
+        }
+
+        const duration = parseInt(document.getElementById('durationHrs').value);
+        // let [h, m] = startTime.split(':');
+        // let endH = (parseInt(h) + duration).toString().padStart(2, '0');
+        // const endTime = `${endH}:${m}`;
+
+        document.getElementById('form-start').value = startTime;
+        document.getElementById('form-end').value = duration;
+        document.getElementById('form-price').value = document.getElementById('sum-total').innerText.replace('$', '');
+
+        const container = document.getElementById('table-ids-container');
+        container.innerHTML = '';
+        selectedTables.forEach(t => {
+            const inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = 'table_ids';
+            inp.value = t.id;
+            container.appendChild(inp);
+        });
+
+        document.getElementById('finalForm').submit();
+    }
+
+    function initTestimonialCarousel() {
+        const track = document.getElementById('testimonial-track');
+        if (!track) return;
+        const slides = Array.from(track.children);
+        const dotsContainer = document.getElementById('carousel-dots');
+        if (!dotsContainer) return;
+
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+        track.style.width = `${totalSlides * 100}%`;
+        slides.forEach(slide => slide.style.width = `${100 / totalSlides}%`);
+
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (index === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                updateCarousel();
+            });
+            dotsContainer.appendChild(dot);
+        });
+
+        function updateCarousel() {
+            const percentage = -(currentSlide * (100 / totalSlides));
+            track.style.transform = `translateX(${percentage}%)`;
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
+        }
+
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }, 2700);
+    }
+</script>
+{% endblock main %}

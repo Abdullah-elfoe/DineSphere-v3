@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - Customized Colors</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>
+        {% block title %}
+        {% endblock title %}
+    </title>
+
+    <link rel="stylesheet" href="{% static 'Restaurants/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'Restaurants/css/btnpanel.css' %}">
+    {% block styles %}
+    {% endblock %}
+    <style>
+        /* --- Main Content --- */
+
+        /* Up arrows in accent to ternary */
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-top">
+            <div class="sidebar-logo">⧲</div>
+            <div class="nav-links">
+                <a href="/business/" class="nav-item {% if request.path == '/business/' %}active{% endif %}" title="Analytics">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+                <a href="/business/reservations" class="nav-item {% if request.path == '/business/reservations' %}active{% endif %}" title="Reservations">
+                    <i class="fas fa-calendar-check"></i>
+                </a>
+                <a href="/business/tables" class="nav-item {% if request.path == '/business/tables' %}active{% endif %}" title="Table Management">
+                    <i class="fas fa-table"></i>
+                </a>
+                <a href="/business/holidays" class="nav-item {% if request.path == '/business/holidays' %}active{% endif %}" title="Holidays">
+                    <i class="fas fa-gift"></i>
+                </a>
+                <a href="/business/reviews" class="nav-item {% if request.path == '/business/reviews' %}active{% endif %}" title="Reviews">
+                    <i class="fas fa-star"></i>
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-bottom">
+            <div class="nav-item" id="dashboard-logout"><i class="fas fa-sign-out-alt"></i></div>
+            <div class="profile-pic">
+                <img src="{{CP__OwnerProfile.image.url}}" alt="https://via.placeholder.com/40x40.png?text=Profile">
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+<div class="main-content">
+    <div class="header">
+        <div class="header-title">
+            <h1>{% block name %}{% endblock %}</h1>
+        </div>
+        <div class="header-controls">
+            <p>Welcome {{ CP__OwnerProfile }}!</p>
+            <div class="dropdown-wrapper">
+                <div class="dropdown-menu" id="business-trigger">
+                    <i class="fab fa-briefcase dropdown-icon"></i>
+                    <span id="current-business-name" data-current-id="{{ CP__Selected.id }}">
+                        {{ CP__Selected.name|default:"Select Restaurant" }}
+                    </span>
+                    <i class="fas fa-chevron-down dropdown-icon"></i>
+                </div>
+
+                <ul class="dropdown-list" id="business-list">
+                    {% for restaurant in CP__Restaurants %}
+                    {% if restaurant.id != CP__Selected.id %}
+                    <li class="dropdown-item" data-id="{{ restaurant.id }}">{{ restaurant.name }}</li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <a href="/business/business-info"><i class="fas fa-briefcase fullscreen-icon c-pointer"></i></a>
+           <a href="/business/staff-management"><i class="fas fa-user-tie fullscreen-icon c-pointer"></i></a>
+
+
+            <div class="notification-bell">
+                <a href="/"><i class="fas fa-arrow-left"></i></a>
+                <!-- <div class="bell-dot"></div> -->
+            </div>
+        </div>
+    </div>
+
+
+    <div class="panel-container">
+        {% block buttons %}
+
+        {% endblock %}
+    </div>
+
+    kk
+    <div class="which-model" data-model="{% block model_name %}{% endblock %}"></div>
+    
+
+    {% block content %}
+    {% endblock %}
+</div>
+
+<div class="drawer-overlay" id="modalOverlay" style="z-index: 3000;"></div>
+<div class="confirm-modal" id="confirmModal">
+    <div class="modal-content">
+        <i class="fas fa-exclamation-triangle warning-icon"></i>
+        <h3>Are you sure?</h3>
+        <p id="modalMessage">This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="modalCancel">Cancel</button>
+            <button class="btn-danger" id="modalConfirm">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- {% block bottom_navigation %}
+{% endblock %} -->
+
+{% block forms %}
+
+{% endblock %}
+</body>
+<script src="{% static 'Restaurants/js/base.js' %}"></script>
+{% block scripts %}
+{% endblock %}
+
+
+</html>

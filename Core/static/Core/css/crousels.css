@@ -1,0 +1,453 @@
+@import url('variables.css');
+
+.carousels {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* height: 150vh; */
+    justify-content: space-evenly;
+    background-color: var(--bg-color);
+    /* border: 1px solid black; */
+}
+
+.carousel {
+    width: 75%;
+    /* border: 1px solid blue; */
+    padding: 10px 0;
+
+}
+
+
+/* Chatgpt */
+.carousel-container {
+    position: relative;
+    width: 100%;
+    /* background-color: red; */
+    /* max-width: 1000px; */
+    overflow: hidden;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+
+.card {
+    flex: 0 0 calc(100% / 6); /* show 6 cards by default */
+    margin: 0 8px;
+    height: 200px;
+    background: #e5e7eb;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #374151;
+}
+.card img {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;  /* match the card */
+    object-fit: cover;    /* keeps aspect ratio and fills card */
+    display: block;       /* remove inline gaps */
+}
+
+@media (max-width: 1800px) {
+    .card { flex: 0 0 calc(100% / 5); }
+}
+@media (max-width: 1400px) {
+    .card { flex: 0 0 calc(100% / 4); }
+}
+@media (max-width: 1024px) {
+    .card { flex: 0 0 calc(100% / 3); }
+}
+@media (max-width: 768px) {
+    .card { flex: 0 0 calc(100% / 2); }
+}
+@media (max-width: 480px) {
+    .card { flex: 0 0 100%; }
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    /* background: rgba(0, 0, 0, 0.5); */
+    background-color: var(--ternary-color);
+    border: none;
+    color: white;
+    font-size: 28px;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 10;
+    transition: background 0.3s;
+}
+
+.carousel-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.btn-left {
+    left: 10px;
+}
+
+.btn-right {
+    right: 10px;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+    .card {
+        flex: 0 0 calc(100% / 2);
+        /* 2 cards on tablets */
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        flex: 0 0 100%;
+        /* 1 card on mobile */
+    }
+}
+
+
+
+
+/* Posters  */
+.poster {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 10%;
+    min-height: auto;
+    flex-wrap: wrap;
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    margin-top: 20px;
+}
+
+.poster-text {
+    max-width: 500px;
+}
+
+.poster-text h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.poster-text p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.store-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.store-buttons img {
+    height: 50px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.store-buttons img:hover {
+    transform: scale(1.05);
+}
+
+.poster-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.poster-image img {
+
+    max-width: 280px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .poster {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .poster-image img {
+        margin-top: 30px;
+    }
+}
+
+
+
+/* Register Restaurant */
+.section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 50px 10%;
+    flex-wrap: wrap;
+}
+
+.section img {
+    aspect-ratio: 2 / 2.4;
+    width: 100%;
+    max-width: 400px;
+    border-radius: var(--primary-color);
+    object-fit: cover;
+    /* height: 4rem; */
+}
+
+.content {
+    flex: 1;
+    min-width: 280px;
+}
+
+.content h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    /* color: var(--bg-color-dark); */
+    margin-bottom: 10px;
+}
+
+.content h2 span {
+    color: var(--primary-color);
+}
+
+.content p {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.stat-box {
+    flex: 1;
+    min-width: 120px;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    background-color: var(--secondary-color);
+}
+
+.stat-box.red {
+    background: var(--secondary-color);
+    ;
+    color: var(--ternary-color);
+}
+
+.stat-box.blue {
+    background: var(--secondary-color);
+    color: var(--ternary-color);
+}
+
+.stat-box h3 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+.stat-box p {
+    font-size: 0.9rem;
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 20px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .stats {
+        justify-content: center;
+    }
+}
+
+
+
+/* FAQs */
+/* Main FAQ Container Styling */
+        .faq-page-wrapper {
+            /* background-color: var(--); */
+            border-radius: 1.5rem; /* Rounded corners */
+            /* box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); */
+            /* max-width: 1200px; */
+            width: 100%;
+
+            overflow: hidden;
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            /* border: 11px solid black; */
+        }
+
+        /* Grid Layout: Swapped to 1.5fr for Image, 2fr for Content */
+        .faq-content-grid {
+            display: grid;
+            /* direction: rtl; */
+            grid-template-columns: 1.5fr 2fr; 
+            gap: 2rem;
+            padding: 4rem;
+            justify-content: center;
+            width: 80%;
+            /* border: 11px solid red; */
+
+        }
+
+        /* Mobile Layout */
+        @media (max-width: 1024px) {
+            .faq-content-grid {
+                grid-template-columns: 1fr;
+                padding: 2rem;
+            }
+        }
+
+        /* Typography */
+        .faq-title {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1.1;
+            color: var(--bg-color-dark); /* Using dark color for primary heading */
+            margin-bottom: 2rem;
+        }
+
+        /* Search Bar Styling */
+        .search-input-group {
+            position: relative;
+            margin-bottom: 2.5rem;
+        }
+
+        .search-input {
+            /* width: 70%; */
+            padding: 0.75rem 3rem 0.75rem 1.5rem;
+            border: 2px solid var(--secondary-color);
+            border-radius: 2rem;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px hsla(173, 100%, 20%, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--bg-color-dark);
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+
+        /* Accordion Styling */
+        .accordion-list {
+            margin-top: 2rem;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            cursor: pointer;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-color);
+            transition: color 0.2s;
+        }
+
+        .accordion-header:hover {
+            color: var(--primary-color);
+        }
+
+        .accordion-question {
+            /* The question text itself */
+            justify-content: auto;
+        }
+
+        .accordion-toggle-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.5rem;
+            line-height: 1;
+            transition: transform 0.3s ease;
+        }
+
+        /* Accordion Body (Content) */
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            padding-bottom: 0;
+            font-weight: 400;
+            color: var(--bg-color-dark);
+        }
+
+        .accordion-body-content {
+            padding-bottom: 1rem; /* Padding for the content inside the hidden body */
+        }
+
+        /* Active State */
+        .accordion-item.active .accordion-body {
+            max-height: 500px; /* Large enough value to ensure content shows */
+            padding-bottom: 1.5rem;
+        }
+
+        .accordion-item.active .accordion-toggle-icon {
+            transform: rotate(45deg); /* Rotate the + to make it an X/Minus */
+            color: var(--bg-color-dark);
+        }
+
+        /* NEW Image Placeholder Panel (Replaces Illustration Panel) */
+        .image-placeholder-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--secondary-color);
+            /* New border radius to match the left side of the container */
+            border-radius: 1.5rem 0 0 1.5rem; 
+            min-height: 300px; /* Ensure visibility on mobile */
+        }
+        
+        @media (max-width: 1024px) {
+            .image-placeholder-panel {
+                /* On mobile, remove side radius and keep bottom radius */
+                border-radius: 1.5rem 1.5rem 0 0;
+                order: -1; /* Place image panel above content on mobile */
+            }
+        }

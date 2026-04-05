@@ -1,0 +1,145 @@
+{% extends "Restaurants/base.html" %}
+{% load static %}
+{% load range_tags %}
+{% block title %} Reviews {% endblock %}
+{% block name %} Reviews {% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Restaurants/css/stylishgrid.css' %}">
+<link rel="stylesheet" href="{% static 'Restaurants/css/drawerform.css' %}">
+{% endblock %}
+{% block buttons %}
+<div class="action-card btn-display-on review_display_on">
+    <div class="icon-box"><i class="fas fa-check-circle"></i></div>
+    <div class="card-content">
+        <span class="card-label">Put On Display</span>
+        <span class="card-value">Visible</span>
+    </div>
+</div>
+
+<div class="action-card btn-display-off review_display_off">
+    <div class="icon-box"><i class="fas fa-eye-slash"></i></div>
+    <div class="card-content">
+        <span class="card-label">Hide from Display</span>
+        <span class="card-value">Hidden</span>
+    </div>
+</div>
+
+<div class="action-card btn-add " id="open-drawer">
+    <div class="icon-box"><i class="fas fa-plus"></i></div>
+    <div class="card-content">
+        <span class="card-label">Add Entry</span>
+        <span class="card-value">New</span>
+    </div>
+</div>
+
+<div class="action-card btn-refresh btn-view">
+    <div class="icon-box"><i class="fas fa-sync-alt"></i></div>
+    <div class="card-content">
+        <span class="card-label">Refresh</span>
+        <span class="card-value">Reload</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block model_name %}
+Review
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <header class="filter-panel">
+        <div class="filter-group">
+            <span class="filter-label">View</span>
+            <div class="view-switcher">
+                <button class="view-btn active" id="gridBtn" title="Grid View">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="view-btn" id="listBtn" title="List View">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">Label</span>
+            <select class="custom-select">
+                <option value="all">All Styles</option>
+                <option value="adventure">Adventure</option>
+                <option value="iconic">Iconic</option>
+                <option value="modern">Modern</option>
+            </select>
+        </div>
+
+        <div class="filter-group toggle-filter">
+            <label class="checkbox-wrapper">
+                <input type="checkbox" checked> Available
+            </label>
+            <label class="checkbox-wrapper">
+                <input type="checkbox"> Budget (Cheap)
+            </label>
+        </div>
+
+        <div class="filter-group">
+            <input type="text" class="custom-select" placeholder="Search items..." style="width: 200px;">
+        </div>
+    </header>
+
+    <main class="data-grid grid-view" id="mainGrid">
+        {% for review in reviews %}
+
+        <div class="item-card clickable-card" data-label="adventure" data-id="{{ review.id }}"
+            data-user="{{ review.user }}" data-on_display="{{ review.on_display|yesno:'true,false' }}"
+            data-rating="{{ review.rating }}" data-comment="{{ review.comment }}">
+            
+            <div class="item-content">
+                <div>
+                    <span class="item-label">
+                        {% if review.on_display %} On Display {% else %} Hidden {% endif %}
+                    </span>
+                    <h3 class="item-title"> 
+                        {% for _ in review.rating|range_num %}
+                        ★
+                        {% endfor %}
+                        ({{ review.rating }})
+                    </h3>
+                </div>
+                <div class="item-price">{{review.user}}: "{{review.comment|truncatechars:200}}..."</div>
+            </div>
+        </div>
+
+
+        {% endfor %}
+    </main>
+</div>
+
+{% endblock %}
+
+{% block forms %}
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<div class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+        <h2>New Registration</h2>
+        <button class="close-drawer" id="closeDrawer">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <form id="drawerForm" class="drawer-form" method="post" action="/business/reviews/">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="drawer-footer">
+            <button type="button" class="btn-secondary" id="clearForm">Clear</button>
+            <button type="submit" class="btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'Restaurants/js/stylishgrid.js' %}"></script>
+<script src="{% static 'Restaurants/js/drawerform.js' %}"></script>
+<script src="{% static 'Restaurants/js/extrabtns.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,119 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'UsersHandling/css/auth.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <title>authentication</title>
+</head>
+
+<body>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="msg {{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="auth-container">
+        <!-- Logo and Header -->
+        <div class="logo-header">
+            <h1>Dine<span style="color: var(--ternary-color);">Sphere</span></h1>
+            <p>Your Table, Your Sphere.</p>
+        </div>
+
+        <!-- Toggle Buttons -->
+        <div class="auth-toggle-buttons">
+            <button id="login-btn" class="toggle-btn active" data-mode="login">LOGIN</button>
+            <button id="signup-btn" class="toggle-btn" data-mode="signup">SIGNUP</button>
+        </div>
+
+        <!-- Form Card (The Visual Container) -->
+        <div class="form-card">
+
+            <!-- Viewport that hides the form that scrolls out of view -->
+            <div class="form-slider-viewport">
+                <!-- The Slider container which moves up and down -->
+                <div class="form-slider" id="formSlider">
+
+                    <!-- Login Form (Top position by default) -->
+                    <form id="login-form" class="auth-form" method="post" action="../login/">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" name="username" placeholder="Username" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" name="password" placeholder="********" required>
+                        </div>
+                        <button type="submit" class="submit-btn">LOGIN</button>
+                    </form>
+
+                    <!-- Signup Form (Bottom position by default) -->
+                    <form id="signup-form" class="auth-form" method="post" action="../signup/"
+                        enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" name="email" placeholder="Email Address" required>
+                        </div>
+
+                        <div class="input-group">
+                            <i class="fas fa-user-plus"></i>
+                            <input type="text" name="username" placeholder="Desired Username" required>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="input-group">
+                                <i class="fas fa-venus-mars"></i>
+                                <select name="gender" required>
+                                    <option value="" disabled selected>Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <i class="fas fa-calendar-alt"></i>
+                                <input type="date" name="dob" required title="Date of Birth">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" name="password" placeholder="Create Password" required>
+                        </div>
+
+                        <div class="input-group file-input-group">
+                            <i class="fas fa-camera"></i>
+                            <input type="file" name="image" accept="image/*" id="profile-image">
+                            <label for="profile-image">Upload Profile Picture</label>
+                        </div>
+
+                        <button type="submit" class="submit-btn">SIGNUP</button>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Version Text -->
+        <p class="version-text">Version: 1.06.05</p>
+
+    </div>
+    <script src="{% static 'UsersHandling/js/auth.js' %}"></script>
+    
+</body>
+
+</html>

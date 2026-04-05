@@ -1,0 +1,14 @@
+:root {
+    /* Colors */
+    --primary-color: hsl(173, 100%, 20%);   /* blue */
+    --secondary-color: hsl(148, 100%, 92%);
+    --ternary-color: hsl(30, 80%, 55%); /* Rich Burnt Orange */
+    --bg-color: #f3f4f6;        
+    --bg-color-dark:hsl(206, 18%, 35%);      
+    --text-color: #111827;
+
+    /* Font */
+    --font-family: 'Raleway', sans-serif;
+}
+
+

@@ -1,0 +1,158 @@
+{% extends "Restaurants/base.html" %}
+{% load static %}
+{% block title %} Days off {% endblock %}
+{% block name %} Holidays {% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Restaurants/css/stylishgrid.css' %}">
+<link rel="stylesheet" href="{% static 'Restaurants/css/drawerform.css' %}">
+{% endblock %}
+{% block buttons %}
+<div class="action-card btn-add" id="open-drawer">
+    <div class="icon-box">
+        <i class="fas fa-plus"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Add Entry</span>
+        <span class="card-value">$560K</span>
+    </div>
+    <i class="fas fa-circle-notch progress-mini"></i>
+</div>
+
+<div class="action-card btn-update">
+    <div class="icon-box">
+        <i class="fas fa-eye"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Update Data</span>
+        <span class="card-value">$185K</span>
+    </div>
+    <i class="fas fa-chart-line progress-mini"></i>
+</div>
+
+<div class="action-card btn-delete">
+    <div class="icon-box">
+        <i class="fas fa-trash-alt"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Delete Log</span>
+        <span class="card-value">$150K</span>
+    </div>
+    <i class="fas fa-bolt progress-mini"></i>
+</div>
+<div class="action-card btn-view">
+    <div class="icon-box">
+        <i class="fas fa-sync-alt"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Refresh</span>
+        <span class="card-value">$742K</span>
+    </div>
+    <i class="fas fa-pie-chart progress-mini"></i>
+</div>
+{% endblock %}
+
+{% block model_name %}
+holidays
+{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="filter-panel">
+        <div class="filter-group">
+            <span class="filter-label">View</span>
+            <div class="view-switcher">
+                <button class="view-btn active" id="gridBtn" title="Grid View">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="view-btn" id="listBtn" title="List View">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">Label</span>
+            <select class="custom-select">
+                <option value="all">All Styles</option>
+                <option value="adventure">Adventure</option>
+                <option value="iconic">Iconic</option>
+                <option value="modern">Modern</option>
+            </select>
+        </div>
+
+        <div class="filter-group toggle-filter">
+            <label class="checkbox-wrapper">
+                <input type="checkbox" checked> Available
+            </label>
+            <label class="checkbox-wrapper">
+                <input type="checkbox"> Budget (Cheap)
+            </label>
+        </div>
+
+        <div class="filter-group">
+            <input type="text" class="custom-select" placeholder="Search items..." style="width: 200px;">
+        </div>
+    </header>
+
+    <main class="data-grid grid-view" id="mainGrid">
+        {% for special_day in special_days %}
+
+        <div class="item-card clickable-card" 
+            data-label="adventure" 
+            data-id="{{ special_day.id }}"
+            data-name="{{ special_day.name }}"
+            data-date="{{ special_day.date|date:'Y-m-d' }}"  
+            data-closed_full_day ="{{ special_day.closed_full_day }}" 
+            data-adjusted_opening_hour ="{{special_day.adjusted_opening_hour}}" 
+            data-adjusted_closing_hour ="{{ special_day.adjusted_closing_hour }}" >
+            <div class="item-content">
+                <div>
+                    <span class="item-label">{{ special_day.date }}</span>
+                    <h3 class="item-title"></h3>
+                </div>
+                <div class="item-price">
+                    {% if special_day.closed_full_day %}
+                        <!-- Closed All Day  -->
+                        {{special_day.closed_full_day}}
+                    {% endif %}
+                    {% if special_day.adjusted_opening_hour and special_day.adjusted_closing_hour %}
+                        {{ special_day.adjusted_opening_hour }}:00 - {{ special_day.adjusted_closing_hour }}:00
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p>No special days or holidays yet.</p>
+        {% endfor %}
+    </main>
+</div>
+
+{% endblock %}
+
+{% block forms %}
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<div class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+        <h2>New Registration</h2>
+        <button class="close-drawer" id="closeDrawer">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <form id="drawerForm" class="drawer-form" method="post" >
+                {% csrf_token %}
+                {{ form.as_p }}
+        <div class="drawer-footer">
+            <button type="button" class="btn-secondary" id="clearForm">Clear</button>
+            <button type="submit" class="btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'Restaurants/js/stylishgrid.js' %}"></script>
+<script src="{% static 'Restaurants/js/drawerform.js' %}"></script>
+{% endblock %}
+

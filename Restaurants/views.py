@@ -1,0 +1,306 @@
+from datetime import datetime
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.http import HttpResponse, JsonResponse
+from Reservations.models import Booking
+from .Services import (
+    create_restaurant_for_user,
+    add_holiday,
+    add_seating_type,
+    add_tabletype,
+    add_table,
+    perform_dynamic_update,
+    getAnalytics
+    )
+from .forms import TableForm, TableSizeForm, RestaurantForm, SpecialDayForm, ReviewForm
+from .models import Restaurant, Table, SpecialDay, Review, SeatingType
+import json
+from UsersHandling.models import RestaurantStaff
+
+
+# Create your views here.
+
+
+
+def registration(request):
+    if request.method == "POST":
+        try:
+            data = {
+                "name": request.POST.get("res_name"),
+                "title": request.POST.get("res_title"),
+                "image": request.FILES.get("res_image"),
+                "about": request.POST.get("res_about"),
+                "city": request.POST.get("city"),
+                "opening_hour": datetime.strptime(
+                    request.POST.get("open_hour"), "%H:%M"
+                ).time(),
+                "closing_hour": datetime.strptime(
+                    request.POST.get("close_hour"), "%H:%M"
+                ).time(),
+            }
+
+            create_restaurant_for_user(request.user, data)
+
+            messages.success(request, "Restaurant registered successfully!")
+            return redirect("")
+
+        except Exception as e:
+            messages.error(request, str(e))
+            print(" i am here" ,str(e))
+            return redirect("/")
+    seating_types = SeatingType.objects.all()
+    return render(request, "Restaurants/registration.html", {"seatingtype": seating_types})
+
+
+
+def staff_management(request):
+    return render(request, "Restaurants/staff_management.html")
+
+def analytics(request):
+    restaurants = Restaurant.objects.filter(restaurantstaff__in=RestaurantStaff.objects.filter(user=request.user)).distinct()
+    restaurant_id = request.session.get('selected_restaurant_id')
+    context = getAnalytics(restaurant_id)
+    context["restaurants"] = restaurants
+    
+    return render(request, "Restaurants/analytics.html", context)
+
+def tables(request):
+    restaurant_id = request.session['selected_restaurant_id']
+    restaurant = Restaurant.objects.get(id=restaurant_id)
+    if request.method == "GET":
+        form = TableForm(restaurant=restaurant)
+        return render(request, "Restaurants/tables.html", {"form": form})
+    elif request.method == "POST":
+        form, _ = add_table(request, restaurant_id)
+        if form.is_valid():
+            obj = form.save(commit=False)  # not yet in DB
+            obj.restaurant = restaurant    # extra field injection
+            obj.save()     
+            messages.success(request, "Table added successfully!")
+        else:
+            messages.error(request, "Failed to add table. Please check the form for errors.")
+        return redirect("/business/tables/")
+
+
+def holidays(request):
+    restaurant_id = request.session['selected_restaurant_id']
+    restaurant = Restaurant.objects.get(id=restaurant_id)
+
+    if request.method == "GET":
+        form = SpecialDayForm()
+        special_days = SpecialDay.objects.filter(restaurant=restaurant)
+
+        return render(request, "Restaurants/holidays.html", {
+            "form": form,
+            "special_days": special_days
+        })
+
+    elif request.method == "POST":
+        form = SpecialDayForm(request.POST)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.restaurant = restaurant  # 🔥 REQUIRED
+            obj.save()
+
+            messages.success(request, "Holiday added successfully!")
+        else:
+            messages.error(request, "Failed to add holiday.")
+
+        return redirect("/business/holidays/")
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Restaurant, Review
+from .forms import ReviewForm
+
+
+def reviews(request):
+    restaurant_id = request.session['selected_restaurant_id']
+    restaurant = Restaurant.objects.get(id=restaurant_id)
+
+    if request.method == "GET":
+        form = ReviewForm()
+        reviews = Review.objects.filter(restaurant=restaurant)
+
+        return render(request, "Restaurants/reviews.html", {
+            "form": form,
+            "reviews": reviews
+        })
+
+    elif request.method == "POST":
+        form = ReviewForm(request.POST)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.restaurant = restaurant
+            obj.user = request.user if request.user.is_authenticated else None
+            obj.save()
+
+            messages.success(request, "Review added successfully!")
+        else:
+            messages.error(request, "Failed to add review. Please check the form.")
+
+        return redirect("/business/reviews/")
+
+def business_info(request):
+    if request.method == "GET":
+        form = RestaurantForm()
+        return render(request, "Restaurants/business_info.html", {"form": form})
+
+    elif request.method == "POST":
+        form = RestaurantForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            restaurant = form.save()
+
+            # 🔥 optional: store in session (since you're using it elsewhere)
+            request.session['selected_restaurant_id'] = restaurant.id
+            RestaurantStaff.objects.create(
+                user=request.user,          # current logged-in user
+                restaurant=restaurant,
+                role='OWNER',
+                is_premium=False  # or True if needed
+            )
+
+            messages.success(request, "Restaurant added successfully!")
+        else:
+            messages.error(request, "Failed to add restaurant.")
+
+        return redirect("/business/business-info/")
+
+def reservations(request):
+    restaurant = Restaurant.objects.get(id=request.session['selected_restaurant_id'])
+    all_reservations = Booking.objects.filter(restaurant=restaurant).all()
+    return render(request, "Restaurants/reservations.html", {"reservations": all_reservations})
+
+
+
+def switch_business(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        business_id = data.get('business_id')
+        
+        # MUST MATCH the Context Processor key: "selected_restaurant_id"
+        request.session['selected_restaurant_id'] = business_id
+        
+        # Get the name to send back to JS
+        restaurant = Restaurant.objects.filter(id=business_id).first()
+        name = restaurant.name if restaurant else "Unknown"
+        
+        return JsonResponse({
+            'status': 'success', 
+            'new_name': name
+        })
+    
+
+
+# -------------------------------
+# Mark Booking as Finished
+# -------------------------------
+def markfinish(request):
+    if request.method == "POST":
+        booking_id = request.POST.get("booking_id")
+        booking = get_object_or_404(Booking, id=booking_id)
+
+        try:
+            booking.mark_finished()
+            messages.success(request, "Booking marked as finished.")
+        except Exception as e:
+            messages.error(request, str(e))
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+# -------------------------------
+# Mark Booking as Cancelled
+# -------------------------------
+def markcancel(request):
+    if request.method == "POST":
+        booking_id = request.POST.get("booking_id")
+        booking = get_object_or_404(Booking, id=booking_id)
+
+        try:
+            booking.cancel()
+            messages.success(request, "Booking cancelled.")
+        except Exception as e:
+            messages.error(request, str(e))
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+# -------------------------------
+# Hide Review
+# -------------------------------
+def hide(request):
+    if request.method == "POST":
+        review_id = request.POST.get("review_id")
+        review = get_object_or_404(Review, id=review_id)
+
+        review.hide_from_display()
+        messages.success(request, "Review hidden from display.")
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+# -------------------------------
+# Unhide Review
+# -------------------------------
+def unhide(request):
+    if request.method == "POST":
+        review_id = request.POST.get("review_id")
+        review = get_object_or_404(Review, id=review_id)
+
+        review.add_to_display()
+        messages.success(request, "Review is now visible.")
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+
+
+
+# --- Update Functions ---
+def updateBusiness(request, id):
+    if request.method == "POST":
+        instance = get_object_or_404(Restaurant, id=id)
+        data = json.loads(request.body)
+        perform_dynamic_update(instance, data)
+        return JsonResponse({"status": "success", "message": "Business updated"})
+
+def updateTables(request, id):
+    if request.method == "POST":
+        instance = get_object_or_404(Table, id=id)
+        data = json.loads(request.body)
+        perform_dynamic_update(instance, data)
+        return JsonResponse({"status": "success", "message": "Table updated"})
+    return redirect("/business/tables")
+
+def updateHolidays(request, id):
+    if request.method == "POST":
+        instance = get_object_or_404(SpecialDay, id=id)
+        data = json.loads(request.body)
+        perform_dynamic_update(instance, data)
+        return JsonResponse({"status": "success", "message": "Holiday updated"})
+
+# --- Delete Functions ---
+def deleteBusiness(request, id):
+    if request.method == "POST":
+        instance = get_object_or_404(Restaurant, id=id)
+        instance.delete()
+        # return JsonResponse({"status": "success", "message": "Business deleted"})
+        return redirect("/business/business-info/")
+
+def deleteTables(request, id):
+    if request.method == "POST":
+        instance = get_object_or_404(Table, id=id)
+        instance.delete()
+        # return JsonResponse({"status": "success", "message": "Table deleted"})
+        return redirect("/business/tables/")
+
+def deleteHolidays(request, id):
+    if request.method == "POST":
+        instance = get_object_or_404(SpecialDay, id=id)
+        instance.delete()
+        # return JsonResponse({"status": "success", "message": "Holiday deleted"})
+        return redirect("/business/holidays/")

@@ -1,0 +1,174 @@
+{% extends "Core/base.html" %}
+{% load static %}
+{% block links %}
+<link rel="stylesheet" href="{% static 'Restaurants/css/registration.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;900&display=swap" rel="stylesheet">
+{% endblock links %}
+{% block title %} Restaurant Registration {% endblock %}
+
+{% block main %}
+
+<body>
+
+    <header class="setup-header">
+        <h1>Dine<span>Sphere</span></h1>
+        <p>Establish Your Presence</p>
+    </header>
+
+    <div class="container">
+        <form id="restaurantForm" method="post" action="../registration/" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+            <div class="section-title"><i class="fas fa-utensils"></i> Basic Information</div>
+            <div class="grid-row">
+                <div class="form-group">
+                    <label>Restaurant Name</label>
+                    <input type="text" name="res_name" placeholder="e.g. The Grand Bistro" required>
+                </div>
+                <div class="form-group">
+                    <label>Title / Tagline</label>
+                    <input type="text" name="res_title" placeholder="e.g. Authentic Italian Cuisine">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Banner Image</label>
+                <input type="file" name="res_image" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label>About Restaurant</label>
+                <textarea name="res_about" rows="4"
+                    placeholder="Tell your guests about your atmosphere and food..."></textarea>
+            </div>
+
+            <div class="section-title"><i class="fas fa-link"></i> Links & Social</div>
+            <div class="grid-row">
+                <div class="form-group">
+                    <label><i class="fab fa-facebook"></i> Facebook Link</label>
+                    <input type="url" name="fb_link" placeholder="https://facebook.com/yourpage">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-globe"></i> Website Link</label>
+                    <input type="url" name="web_link" placeholder="https://yourwebsite.com">
+                </div>
+            </div>
+
+            <div class="section-title"><i class="fas fa-clock"></i> Operation & Booking Policy</div>
+            <div class="grid-row">
+                <div class="form-group">
+                    <label>Opening Hour</label>
+                    <input type="time" name="open_hour" required >
+                </div>
+                <div class="form-group">
+                    <label>Closing Hour</label>
+                    <input type="time" name="close_hour" required >
+                </div>
+                <div class="form-group">
+                    <label>Cool Down Period (Mins)</label>
+                    <input type="number" name="cooldown" placeholder="e.g. 15">
+                </div>
+            </div>
+
+            <div class="grid-row">
+                <div class="form-group">
+                    <label>Slot Duration (Mins)</label>
+                    <input type="number" name="slot_duration" placeholder="e.g. 60" required>
+                </div>
+                <div class="form-group">
+                    <label>Advance Booking (Months)</label>
+                    <input type="number" name="advance_days" placeholder="e.g. 3">
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" name="city" placeholder="Yokohama">
+                </div>
+            </div>
+
+            <div class="section-title">
+                <i class="fas fa-chair"></i> Seating Types & Pricing
+            </div>
+
+            <div id="seatingContainer">
+                <div class="seating-row">
+                    <select name="seat_type[]" id="seating-type">
+                        <option value="" disabled selected>Select Seating Type</option>
+                        {% for seat in seatingtype %}
+                        <option value="{{seat}}">{{seat}}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" name="seat_price[]" placeholder="Price ($)" required>
+                    <input type="number" name="available_seats[]" placeholder="Available Seats" required>
+                    <!-- <div style="width: 40px;"></div> -->
+                </div>
+            </div>
+
+            <button type="button" class="btn-add" id="addSeatingBtn" title="Add Seating Type">
+                <i class="fas fa-plus"></i>
+            </button>
+
+            <button type="submit" class="submit-btn">Register Restaurant</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('addSeatingBtn').addEventListener('click', function () {
+            const container = document.getElementById('seatingContainer');
+            const currentCount = container.getElementsByClassName('seating-row').length;
+
+            if (currentCount >= 3) {
+                alert('You can only add up to 3 seating types.');
+                return;
+            }
+
+            // Create New Row
+            const newRow = document.createElement('div');
+            newRow.className = 'seating-row';
+
+            newRow.innerHTML = `
+        <select name="seat_type[]" id="seating-type">
+                        <option value="" disabled selected>Select Seating Type</option>
+                        {% for seat in seatingtype %}
+                        <option value="{{seat}}">{{seat}}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" name="seat_price[]" placeholder="Price ($)" required>
+                    <input type="number" name="available_seats[]" placeholder="Available Seats" required>
+    `;
+
+            container.appendChild(newRow);
+        });
+
+
+        // Form Submission logic
+        document.getElementById('restaurantForm').addEventListener('submit', function (e) {
+            // e.preventDefault();
+            
+            console.log('Form submitted');
+        });
+
+        function logRestaurantFormData() {
+            const form = document.getElementById('restaurantForm');
+            const formData = new FormData(form);
+
+            const data = {};
+
+            for (let [key, value] of formData.entries()) {
+                // Handle multiple values (arrays)
+                if (key.endsWith('[]')) {
+                    const cleanKey = key.replace('[]', '');
+                    if (!data[cleanKey]) {
+                        data[cleanKey] = [];
+                    }
+                    data[cleanKey].push(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+
+            console.log('FORM DATA ↓↓↓');
+            console.log(data);
+        }
+    </script>
+    {% endblock %}

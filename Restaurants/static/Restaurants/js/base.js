@@ -1,0 +1,205 @@
+ // Select all nav items
+  const navItems = document.querySelectorAll('.nav-links .nav-item');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      // Remove 'active' class from all items
+      navItems.forEach(nav => nav.classList.remove('active'));
+      // Add 'active' class to the clicked item
+      item.classList.add('active');
+    });
+  });
+
+// Drop Down Menu
+document.addEventListener('DOMContentLoaded', function() {
+    const trigger = document.getElementById('business-trigger');
+    const list = document.getElementById('business-list');
+    const nameDisplay = document.getElementById('current-business-name');
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        list.classList.toggle('show');
+    });
+
+    // We use Event Delegation because list items will be added/removed dynamically
+    list.addEventListener('click', function(e) {
+        const item = e.target.closest('.dropdown-item');
+        if (!item) return;
+
+        // 1. Capture Old Data (The one currently in the header)
+        const oldId = nameDisplay.getAttribute('data-current-id');
+        const oldName = nameDisplay.innerText;
+
+        // 2. Capture New Data (The one you just clicked)
+        const newId = item.getAttribute('data-id');
+        const newName = item.innerText;
+
+        // 3. Perform the SWAP in the UI
+        // Update Header
+        nameDisplay.innerText = newName;
+        nameDisplay.setAttribute('data-current-id', newId);
+
+        // Update List: Remove the new one, Add back the old one
+        item.remove();
+        const newListItem = document.createElement('li');
+        newListItem.className = 'dropdown-item';
+        newListItem.setAttribute('data-id', oldId);
+        newListItem.innerText = oldName;
+        list.appendChild(newListItem);
+
+        list.classList.remove('show');
+
+        // 4. Fire AJAX
+        sendBusinessUpdate(newId);
+    });
+
+    document.addEventListener('click', () => list.classList.remove('show'));
+
+    function sendBusinessUpdate(id) {
+        const csrftoken = getCookie('csrftoken');
+        fetch('/business/switch/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({ 'business_id': id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // If your backend handles the full page data update, 
+                // you might want to reload here:
+                // window.location.reload(); 
+                console.log("Switched!");
+            }
+        });
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const logoutBtn = document.getElementById('dashboard-logout');
+    const modal = document.getElementById('confirmModal');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalConfirm = document.getElementById('modalConfirm');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalTitle = modal.querySelector('h3');
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            // 1. Update Modal Content for Logout
+            modalTitle.innerText = "Leaving so soon?";
+            modalMessage.innerText = "Are you sure you want to log out of your dashboard?";
+            modalConfirm.innerText = "Logout";
+            modalConfirm.style.backgroundColor = "var(--primary-color)"; // Match your teal theme
+
+            // 2. Set the global pending action to the logout URL
+            window.pendingActionUrl = "/uh/logout/";
+            
+            // 3. Show Modal
+            modal.classList.add('show');
+            modalOverlay.classList.add('show');
+        });
+    }
+
+    // --- Modular Confirm Handler ---
+    // This handles Logout, Deletions, or Toggles based on whatever is in window.pendingActionUrl
+    modalConfirm?.addEventListener('click', () => {
+        if (!window.pendingActionUrl) return;
+
+        const actionForm = document.createElement('form');
+        actionForm.method = 'POST';
+        actionForm.action = window.pendingActionUrl;
+        
+        const csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = 'csrfmiddlewaretoken';
+        // Get CSRF from the hidden input in your existing forms or cookie
+        csrf.value = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+        
+        actionForm.appendChild(csrf);
+        document.body.appendChild(actionForm);
+        actionForm.submit();
+    });
+
+    // --- Close Modal Logic ---
+    const closeModal = () => {
+        modal.classList.remove('show');
+        modalOverlay.classList.remove('show');
+        // Reset button state for next use (e.g. if a delete happens later)
+        modalConfirm.classList.add('btn-danger');
+        modalConfirm.innerText = "Delete";
+    };
+
+    document.getElementById('modalCancel')?.addEventListener('click', closeModal);
+    modalOverlay?.addEventListener('click', closeModal);
+
+    // Helper for CSRF if not present in DOM
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+
+/**
+ * Universal AJAX Update Function
+ * @param {string} modelName - 'tables', 'business', or 'holidays'
+ * @param {number} id - The instance ID
+ * @param {Object} data - Key-value pairs of form data
+ */
+async function triggerUpdate(modelName, id, data) {
+    const url = `/business/${modelName}/update/${id}/`;
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            // Booyah! Reload to see changes or update UI manually
+            window.location.reload();
+        } else {
+            alert("Error updating record");
+        }
+    } catch (error) {
+        console.error("Update failed:", error);
+    }
+}
+
+// Example usage when clicking your "Save Changes" button in the drawer:
+/*
+const formData = {
+    name: document.querySelector('[name="table_name"]').value,
+    capacity: document.querySelector('[name="capacity"]').value
+};
+triggerUpdate('tables', selectedId, formData);
+*/

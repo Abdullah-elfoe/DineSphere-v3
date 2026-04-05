@@ -1,0 +1,163 @@
+{% extends "Core/base.html" %}
+{% load static %}
+{% block links %}
+<link rel="stylesheet" href="{% static 'Core/css/profile.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock links %}
+{% block title %} Profile {% endblock %}
+
+{% block main %}
+<div class="profile-container">
+    <header class="profile-header">
+        <div class="cover-photo"></div>
+        <div class="user-meta">
+            <div class="avatar-container">
+                <img src="{{ request.user.image.url }}" alt="Profile" class="profile-avatar">
+                <label for="profile-image-upload" class="edit-avatar"><i class="fas fa-camera"></i></label>
+            </div>
+            <div class="user-details">
+                <h1>{{ request.user.username }}</h1>
+                <p><i class="fas fa-envelope"></i> {{ request.user.email }}</p>
+            </div>
+        </div>
+    </header>
+
+    <nav class="profile-tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'profile-info')">Profile Info</button>
+        <button class="tab-btn" onclick="openTab(event, 'pending-orders')">Pending Orders</button>
+        <button class="tab-btn" onclick="openTab(event, 'finished-orders')">Finished Orders</button>
+        <button class="tab-btn" onclick="openTab(event, 'cancelled-orders')">Cancelled Orders</button>
+    </nav>
+
+    <div class="content-wrapper">
+        <div id="profile-info" class="tab-content active">
+            <h3>Personal Information</h3>
+            <div class="info-grid">
+                <div class="info-item"><span>Gender:</span>
+                    <p>{{ request.user.profile.gender }}</p>
+                </div>
+                <div class="info-item"><span>DOB:</span>
+                    <p>{{ request.user.profile.date_of_birth }}</p>
+                </div>
+                <div class="info-item"><span>Joined:</span>
+                    <p>{{ request.user.date_joined|date:"M Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="pending-orders" class="tab-content">
+            <h3>Current Orders</h3>
+            <div class="table-container">
+                {% if not pending_booking %}
+                <p>You have no pending orders.</p>
+                {% else %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in pending_booking %}
+                        <tr>
+                            <td>{{ booking.id }}</td>
+                            <td>{{ booking.created_at|date:"d/m/Y" }}</td>
+                            <td>${{ booking.total_price }}</td>
+                            <td><span class="badge pending">Pending</span></td>
+                            <td>
+                                <button class="btn-cancel" onclick="confirmCancel('{{ booking.id }}')">
+                                    <i class="fas fa-times-circle"></i> Cancel
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                    {% endfor %}
+                </table>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <div id="finished-orders" class="tab-content">
+            <h3>Order History</h3>
+            <div class="table-container">
+                {% if not completed_booking %}
+                <p>You have no completed orders.</p>
+                {% else %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in completed_booking %}
+                        <tr>
+                            <td>{{ booking.id }}</td>
+                            <td>{{ booking.created_at|date:"d/m/Y" }}</td>
+                            <td>${{ booking.total_price }}</td>
+                            <td><span class="badge success">Completed</span></td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="cancelled-orders" class="tab-content">
+            <h3>Cancelled Orders</h3>
+            <div class="table-container">
+                {% if not canceled_booking %}
+                <p>You have no cancelled orders.</p>
+                {% else %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in canceled_booking %}
+                        <tr>
+                            <td>{{ booking.id }}</td>
+                            <td>{{ booking.created_at|date:"d/m/Y" }}</td>
+                            <td>${{ booking.total_price }}</td>
+                            <td><span class="badge error">Cancelled</span></td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Cancel Confirmation Modal -->
+<div id="cancelModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Cancel Order</h3>
+        <p>Are you sure you want to cancel this order?</p>
+        <div class="modal-actions">
+            <button class="btn-confirm" id="confirmCancelBtn">Yes, Cancel</button>
+            <button class="btn-cancel" onclick="closeModal()">No, Keep</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'Core/js/Profile.js' %}"></script>
+
+
+{% endblock %}

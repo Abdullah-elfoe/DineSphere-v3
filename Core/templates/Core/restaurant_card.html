@@ -1,0 +1,42 @@
+{% load range_tags %}
+<!-- {{restaurant.name}} -->
+<div style="display: block !important;" class="modern-card {% if not is_search %}carousel-item{% endif %}" 
+     data-name="{{ restaurant.name }}" 
+     data-price="{{ mp }}"
+     data-restaurant-id="{{ restaurant.id }}"
+     data-isfav="{{ restaurant.is_favourite }}"
+     {% if is_search %}style="display: none;"{% endif %}
+     onclick="location.href='/reservation/{{restaurant.name|space_to_value}}'">
+    
+    <div class="card-image-wrapper">
+        <img src="{{ restaurant.image.url }}" alt="{{ restaurant.name }}" class="main-img">
+         <button class="fav-btn {% if is_favourite %} active {% endif %}" onclick="toggleFavorite(event, '{{ restaurant.id }}')">
+            {% if restaurant.is_favourite %}
+            <i class="fa-solid fa-heart"></i>
+            {% else %}
+            <i class="fa-regular fa-heart"></i>
+            {% endif %}
+        </button>
+        <div class="price-badge">${{mp}}</div>
+    </div>
+
+    <div class="card-info">
+        <div class="card-header">
+            <span class="restaurant-tag">{{ restaurant.title|truncatechars:15 }}</span>
+            <div class="card-rating">
+                <i class="fas fa-star"></i>
+                <!-- <span>{{ review.average_rating|default:"0.0" }}</span> -->
+            </div>
+        </div>
+        
+        <h3 class="restaurant-name">{{ restaurant.name }}</h3>
+        
+        <p class="restaurant-desc">{{ restaurant.about_restaurant|truncatewords:6 }}</p>
+        
+        <div class="card-footer">
+            <span class="time-info">
+                <i class="fa-solid fa-clock"></i> {{ restaurant.default_opening_hour }}:00 - {{ restaurant.default_closing_hour }}:00
+            </span>
+        </div>
+    </div>
+</div>

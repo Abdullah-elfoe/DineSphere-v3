@@ -1,0 +1,231 @@
+:root {
+    --primary-color: hsl(173, 100%, 20%);
+    --secondary-color: hsl(148, 100%, 92%);
+    --ternary-color: hsl(30, 80%, 55%);
+    --bg-color: #f8f9fa;
+    --text-color: #111827;
+    --white: #ffffff;
+    --border-radius: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.container {
+    max-width: 1200px;
+    /* margin: auto; */
+}
+
+/* --- Filter Panel --- */
+.filter-panel {
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+/* View Switcher */
+.view-switcher {
+    display: flex;
+    background: var(--bg-color);
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.view-btn {
+    border: none;
+    background: transparent;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #9ca3af;
+    transition: var(--transition);
+}
+
+.view-btn.active {
+    background: var(--white);
+    color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Selects & Checkboxes */
+.custom-select {
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-family: inherit;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+}
+
+.toggle-filter {
+    display: flex;
+    gap: 15px;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* --- Grid & List View Logic --- */
+.data-grid {
+    display: grid;
+    gap: 25px;
+    transition: var(--transition);
+}
+
+/* Grid State */
+.data-grid.grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+/* List State (Convert to Table-like Rows) */
+.data-grid.list-view {
+    grid-template-columns: 1fr;
+}
+
+/* --- Cards --- */
+.item-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    border: 1px solid transparent;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Image Section */
+.item-image {
+    height: 180px;
+    background: #eee;
+    position: relative;
+}
+
+.status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.status-available {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.status-unavailable {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+/* Content Section */
+.item-content {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.item-label {
+    color: var(--ternary-color);
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.item-title {
+    font-size: 1.2rem;
+    font-weight: 900;
+    margin: 0 0 10px 0;
+}
+
+.item-price {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+/* List View Modifier Styles */
+.list-view .item-card {
+    flex-direction: row;
+    align-items: center;
+    height: 100px;
+    padding-right: 20px;
+}
+
+.list-view .item-image {
+    width: 120px;
+    height: 100%;
+}
+
+.list-view .item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+.list-view .item-title {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.list-view .item-label {
+    margin: 0;
+    margin-right: 20px;
+    min-width: 80px;
+}
+
+@media (max-width: 768px) {
+    .list-view .item-card {
+        height: auto;
+        flex-direction: column;
+    }
+
+    .list-view .item-image {
+        width: 100%;
+        height: 150px;
+    }
+
+    .list-view .item-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 20px;
+    }
+}

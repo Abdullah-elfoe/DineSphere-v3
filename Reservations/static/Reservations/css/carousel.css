@@ -1,0 +1,79 @@
+  /* The Carousel Viewport */
+        .carousel-container {
+            width: 100%;
+            position: relative;
+        }
+
+        /* The Sliding Track */
+        .carousel-track {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.45, 0, 0.55, 1);
+            /* Width is set dynamically by JS based on N slides */
+        }
+
+        /* Individual Slide */
+        .testimonial-slide {
+            width: 100%; /* JS will force this to be exactly the container width */
+            flex-shrink: 0;
+            padding: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            gap: 1rem;
+        }
+
+        .testimonial-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--ternary-color);
+            background-color: white;
+        }
+
+        .testimonial-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+
+        .quote-icon {
+            color: var(--ternary-color);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.6;
+        }
+
+        .testimonial-content {
+            font-style: italic;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            position: relative;
+        }
+
+        /* Optional: Navigation Dots */
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: var(--ternary-color);
+            transform: scale(1.3);
+        }

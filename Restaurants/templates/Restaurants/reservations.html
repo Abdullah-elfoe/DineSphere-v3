@@ -1,0 +1,132 @@
+{% extends "Restaurants/base.html" %}
+{% block title %} Bookings {% endblock %}
+{% load static %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Restaurants/css/stylishgrid.css' %}">
+{% endblock %}
+{% block name %} Reservations {% endblock %}
+{% block buttons %}
+
+<div class="action-card btn-finish booking_finish">
+    <div class="icon-box">
+        <i class="fas fa-check"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Mark Finished</span>
+        <span class="card-value">$560K</span>
+    </div>
+    <i class="fas fa-circle-notch progress-mini"></i>
+</div>
+
+<div class="action-card btn-cancel booking_cancel">
+    <div class="icon-box">
+        <i class="fas fa-times"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Mark Cancelled</span>
+        <span class="card-value">$560K</span>
+    </div>
+    <i class="fas fa-circle-notch progress-mini"></i>
+</div>
+
+<div class="action-card btn-delete">
+    <div class="icon-box">
+        <i class="fas fa-trash-alt"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Delete Log</span>
+        <span class="card-value">$150K</span>
+    </div>
+    <i class="fas fa-bolt progress-mini"></i>
+</div>
+<div class="action-card btn-view">
+    <div class="icon-box">
+        <i class="fas fa-sync-alt"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Refresh</span>
+        <span class="card-value">$742K</span>
+    </div>
+    <i class="fas fa-pie-chart progress-mini"></i>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <header class="filter-panel">
+        <div class="filter-group">
+            <span class="filter-label">View</span>
+            <div class="view-switcher">
+                <button class="view-btn active" id="gridBtn" title="Grid View">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="view-btn" id="listBtn" title="List View">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">Label</span>
+            <select class="custom-select">
+                <option value="all">All Styles</option>
+                <option value="adventure">Adventure</option>
+                <option value="iconic">Iconic</option>
+                <option value="modern">Modern</option>
+            </select>
+        </div>
+
+        <div class="filter-group toggle-filter">
+            <label class="checkbox-wrapper">
+                <input type="checkbox" checked> Available
+            </label>
+            <label class="checkbox-wrapper">
+                <input type="checkbox"> Budget (Cheap)
+            </label>
+        </div>
+
+        <div class="filter-group">
+            <input type="text" class="custom-select" placeholder="Search items..." style="width: 200px;">
+        </div>
+    </header>
+
+    <main class="data-grid grid-view" id="mainGrid">
+        {% for r in reservations %}
+        <div class="item-card clickable-card" data-label="adventure" data-id="{{r.id}}">
+            <div class="item-image">
+
+                <span class="status-badge 
+    {% if r.status == 'finished' %}status-finished
+    {% elif r.status == 'pending' %}status-pending
+    {% elif r.status == 'cancelled' %}status-cancelled
+    {% else %}status-unknown{% endif %}">
+                    {{ r.status|capfirst }}
+                </span>
+            </div>
+            <div class="item-content">
+                <div>
+                    <span class="item-label">${{r.total_price}}/hr</span>
+                    <h3 class="item-title">{% for table in r.tables.all %}{{ table.name }}, {% endfor %}</h3>
+                </div>
+                <div class="item-price">{{r.booking_start_datetime}} - {{r.booking_end_datetime}}</div>
+            </div>
+        </div>
+
+        {% endfor %}
+    </main>
+</div>
+{% csrf_token %}
+{% endblock %}
+
+
+{% block bottom_navigation %}
+<div class="bottom-nav">hi</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{% static 'Restaurants/js/stylishgrid.js' %}"></script>
+<script src="{% static 'Restaurants/js/drawerform.js' %}"></script>
+<script src="{% static 'Restaurants/js/extrabtns.js' %}"></script>
+{% endblock %}

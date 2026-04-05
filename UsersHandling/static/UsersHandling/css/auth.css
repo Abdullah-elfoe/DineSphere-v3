@@ -1,0 +1,208 @@
+@import url('variables.css');
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--primary-color); 
+    color: var(--secondary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Main Container */
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 1.5rem;
+    margin: 1.1rem 0;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    border-radius: 0.5rem;
+    position: relative;
+    background-color: hsla(173, 50%, 15%, 0.9);
+}
+
+/* Header */
+.logo-header h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    color: white;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.logo-header p {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light-text);
+    margin-bottom: 2rem;
+}
+
+/* Toggle Buttons */
+.auth-toggle-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    color: var(--light-text);
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+    color: var(--secondary-color);
+    border-bottom-color: var(--secondary-color);
+}
+
+/* VIEWPORT & SLIDER */
+.form-card { position: relative; }
+
+.form-slider-viewport {
+    overflow: hidden;
+    border-radius: 0.5rem;
+    background-color: var(--card-overlay);
+    padding: 1.5rem 1.5rem 0;
+    transition: height 0.35s ease;
+}
+
+.form-slider {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.35s ease;
+}
+
+.auth-form {
+    flex-shrink: 0;
+    width: 100%;
+    padding-bottom: 1.5rem;
+}
+
+/* INPUT GROUPS - SHARED STYLES */
+.input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    padding-bottom: 0.25rem;
+}
+
+.input-group i {
+    font-size: 1.1rem;
+    margin-right: 1rem;
+    color: var(--secondary-color);
+}
+
+/* Unified styling for ALL input types */
+.input-group input, 
+.input-group select {
+    background: none;
+    border: none;
+    outline: none;
+    width: 100%;
+    color: white;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    font-weight: 600;
+    font-family: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Fix for Date and Select colors */
+.input-group input[type="date"] {
+    color-scheme: dark; /* Makes the calendar icon white */
+}
+
+.input-group select {
+    cursor: pointer;
+}
+
+.input-group select option {
+    background-color: #0a2e2a; 
+    color: white;
+}
+
+.input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+}
+
+/* GENDER & DOB ROW */
+.input-row {
+    display: flex;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.input-row .input-group {
+    flex: 1;
+}
+
+/* FILE INPUT CUSTOMIZATION */
+.file-input-group {
+    position: relative;
+}
+
+.file-input-group input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.file-input-group label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    font-weight: 400;
+    text-align: left;
+    width: 100%;
+}
+
+/* SUBMIT BUTTON */
+.submit-btn {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 1.5rem;
+    border: none;
+    border-radius: 0.3rem;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: var(--ternary-color);
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+    box-shadow: 0 6px 20px hsla(30, 80%, 55%, 0.6);
+}
+
+/* OTHER STYLES */
+.version-text { font-size: 0.8rem; margin-top: 2rem; color: var(--ternary-color); font-weight: 600; }
+
+.messages { margin: 20px; }
+.msg { padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; font-weight: 500; }
+.msg.success { background: #d1fae5; color: #065f46; }
+.msg.error { background: #fee2e2; color: #b91c1c; }
+
+@media (max-width: 360px) {
+    .input-row { flex-direction: column; gap: 0; }
+}

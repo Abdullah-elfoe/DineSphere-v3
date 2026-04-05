@@ -1,0 +1,291 @@
+        :root {
+            /* Colors - Overridden as per user request */
+            --primary-color: hsl(173, 100%, 20%);
+            /* blue/dark teal */
+            --secondary-color: hsl(148, 100%, 92%);
+            /* very light green */
+            --ternary-color: hsl(30, 80%, 55%);
+            /* Rich Burnt Orange */
+            --bg-color: #f3f4f6;
+            --bg-color-dark: hsl(206, 18%, 35%);
+            /* mid-gray for contrast */
+            --text-color: #111827;
+
+            /* Mapped colors from design with new values */
+            --sidebar-bg: var(--bg-color-dark);
+            --sidebar-text: var(--secondary-color);
+            --sidebar-active-tab: var(--ternary-color);
+            --main-bg: var(--bg-color);
+            --header-text: var(--primary-color);
+            --card-bg: white;
+            --main-text: var(--text-color);
+            --sub-text: #6b7280;
+            /* lighter gray for contrast */
+
+            --gradient-card-pink-start: hsl(173, 80%, 60%);
+            /* Adjusted pink gradient start to work with teal */
+            --gradient-card-pink-end: hsl(173, 100%, 30%);
+            /* Adjusted pink gradient end for teal */
+            --gradient-card-orange: var(--ternary-color);
+            /* Kept for contrast in gradients if used elsewhere */
+
+            /* Neutral Colors for original elements that aren't recolor candidates */
+            --white: #ffffff;
+            --black: #000000;
+            --pink-light-card: hsl(148, 50%, 85%);
+            /* Adjusted pink-light-card color map */
+            --teal-card: hsl(173, 20%, 95%);
+            /* Adjusted teal-card color map */
+            --red-notification: hsl(30, 100%, 60%);
+            /* Notification maps to ternary orange */
+
+            /* Font */
+            --font-family: 'Raleway', sans-serif;
+            --font-size-base: 14px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--main-bg);
+            color: var(--main-text);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-size: var(--font-size-base);
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 80px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            justify-content: space-between;
+        }
+
+        .sidebar-logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--ternary-color), hsl(200, 100%, 70%));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: var(--white);
+            margin-bottom: 50px;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: var(--sidebar-text);
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--white);
+        }
+
+        .nav-item.active {
+            background-color: var(--sidebar-active-tab);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar-bottom {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+                .notification-bell {
+            position: relative;
+        }
+
+        .bell-dot {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--red-notification);
+            border-radius: 50%;
+            border: 2px solid var(--sidebar-bg);
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--white);
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+                .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-title h1 {
+            color: var(--header-text);
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .dropdown-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background-color: var(--white);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .dropdown-icon {
+            color: var(--primary-color);
+        }
+
+        .dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-list {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    width: 220px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    list-style: none;
+    padding: 8px;
+    margin: 0;
+    display: none; /* Hidden by default */
+    z-index: 1000;
+    border: 1px solid #eee;
+}
+
+.dropdown-list.show {
+    display: block;
+    animation: fadeInDown 0.2s ease-out;
+}
+
+.dropdown-item {
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: 0.2s;
+    color: var(--text-color);
+}
+
+.dropdown-item:hover {
+    background-color: var(--secondary-color); /* The light green HSL */
+    color: var(--primary-color); /* The dark teal HSL */
+}
+
+/* Optional: Active state highlighting */
+.dropdown-item.selected {
+    border-left: 4px solid var(--ternary-color); /* Burnt Orange accent */
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.c-pointer {
+    cursor: pointer !important;
+}
+
+/* modal confirmation */
+.confirm-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    z-index: 3001;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    display: none;
+    opacity: 0;
+    transition: 0.3s;
+}
+.confirm-modal.show { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.warning-icon { font-size: 3rem; color: var(--ternary-color); margin-bottom: 15px; }
+.btn-danger { background: #ef4444; color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+.clickable-card.selected { border: 2px solid var(--primary-color); background: var(--secondary-color); }
+
+
+.status-finished {
+    background-color: #3498db; /* blue */
+
+}
+
+.status-pending {
+    background-color: #27ae60; /* green */
+}
+
+.status-cancelled {
+    background-color: #e74c3c; /* red */
+}/* Finished: dark blue background, light blue text */
+.status-finished {
+    background-color: #1f3b70; /* dark blue */
+    color: #85c1e9;            /* light blue text */
+}
+
+/* Pending: dark green background, light green text */
+.status-pending {
+    background-color: #1e5631; /* dark green */
+    color: #82e0aa;            /* light green text */
+}
+
+/* Cancelled: dark red background, light red text */
+.status-cancelled {
+    background-color: #7a1f1f; /* dark red */
+    color: #f5b7b1;            /* light red text */
+}

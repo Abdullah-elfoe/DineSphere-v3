@@ -1,0 +1,169 @@
+{% extends "Restaurants/base.html" %}
+{% load static %}
+{% block title %} Business {% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'Restaurants/css/stylishgrid.css' %}">
+<link rel="stylesheet" href="{% static 'Restaurants/css/drawerform.css' %}">
+{% endblock %}
+{% block name %} Business {% endblock %}
+
+{% block buttons %}
+<div class="action-card btn-add" id="open-drawer">
+    <div class="icon-box">
+        <i class="fas fa-plus"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Add Entry</span>
+        <span class="card-value">$560K</span>
+    </div>
+    <i class="fas fa-circle-notch progress-mini"></i>
+</div>
+
+<div class="action-card btn-update">
+    <div class="icon-box">
+        <i class="fas fa-eye"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Update Data</span>
+        <span class="card-value">$185K</span>
+    </div>
+    <i class="fas fa-chart-line progress-mini"></i>
+</div>
+
+<div class="action-card btn-delete">
+    <div class="icon-box">
+        <i class="fas fa-trash-alt"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Delete Log</span>
+        <span class="card-value">$150K</span>
+    </div>
+    <i class="fas fa-bolt progress-mini"></i>
+</div>
+<div class="action-card btn-view">
+    <div class="icon-box">
+        <i class="fas fa-sync-alt"></i>
+    </div>
+    <div class="card-content">
+        <span class="card-label">Refresh</span>
+        <span class="card-value">$742K</span>
+    </div>
+    <i class="fas fa-pie-chart progress-mini"></i>
+</div>
+{% endblock %}
+
+{% block model_name %}business{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <header class="filter-panel">
+        <div class="filter-group">
+            <span class="filter-label">View</span>
+            <div class="view-switcher">
+                <button class="view-btn active" id="gridBtn" title="Grid View">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="view-btn" id="listBtn" title="List View">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">Label</span>
+            <select class="custom-select">
+                <option value="all">All Styles</option>
+                <option value="adventure">Adventure</option>
+                <option value="iconic">Iconic</option>
+                <option value="modern">Modern</option>
+            </select>
+        </div>
+
+        <div class="filter-group toggle-filter">
+            <label class="checkbox-wrapper">
+                <input type="checkbox" checked> Available
+            </label>
+            <label class="checkbox-wrapper">
+                <input type="checkbox"> Budget (Cheap)
+            </label>
+        </div>
+
+        <div class="filter-group">
+            <input type="text" class="custom-select" placeholder="Search items..." style="width: 200px;">
+        </div>
+    </header>
+
+    <main class="data-grid grid-view" id="mainGrid">
+        {% for restaurant in CP__Restaurants.all %}
+
+        <div class="item-card clickable-card" 
+            data-label="adventure"
+            
+            data-id="{{ restaurant.id }}"
+            data-name="{{ restaurant.name }}"
+            data-title="{{ restaurant.title}}"
+            data-address="{{ restaurant.address }}"
+            data-phone_number="{{ restaurant.phone_number }}"
+            data-about_restaurant="{{ restaurant.about_restaurant }}"
+            data-fb_link="{{ restaurant.fb_link }}"
+            data-website_link = "{{ restaurant.website_link }}"
+            data-seating_types = "{% for seating in restaurant.seating_types.all %}
+            {{ seating.id }},
+            {% endfor %}"
+            data-has_top_offers = "{{ restaurant.has_top_offers }}"
+            data-default_opening_hour = "{{ restaurant.default_opening_hour }}"
+            data-default_closing_hour = "{{ restaurant.default_closing_hour }}"
+            data-slot_duration_minutes = "{{ restaurant.slot_duration_minutes }}"
+            data-allow_advance_booking_days = "{{ restaurant.allow_advance_booking_days }}"
+            data-cool_down = "{{ restaurant.cool_down }}"
+            data-city = "{{ restaurant.city }}"
+
+
+            >
+            <div class="item-image">
+                
+            </div>
+            
+            <div class="item-content">
+                <div>
+                    <span class="item-label">Adventure</span>
+                    <h3 class="item-title">{{ restaurant.name }}</h3>
+                </div>
+                <div class="item-price">${{restaurant.city}}</div>
+            </div>
+        </div>
+
+        {% endfor %}
+    </main>
+</div>
+
+{% endblock %}
+
+{% block forms %}
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<div class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+        <h2>New Registration</h2>
+        <button class="close-drawer" id="closeDrawer">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <form id="drawerForm" class="drawer-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+        <div class="drawer-footer">
+            <button type="button" class="btn-secondary" id="clearForm">Clear</button>
+            <button type="submit" class="btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{% static 'Restaurants/js/stylishgrid.js' %}"></script>
+<script src="{% static 'Restaurants/js/drawerform.js' %}"></script>
+{% endblock %}

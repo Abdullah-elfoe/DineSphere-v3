@@ -1,0 +1,461 @@
+
+
+        /* --- Main Analytics Grid --- */
+        .main-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) 1fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* --- Global styles for cards --- */
+        .card {
+            background-color: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            color: var(--sub-text);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .card-options {
+            color: var(--sub-text);
+            cursor: pointer;
+        }
+
+        /* --- Individual Cards --- */
+
+        /* 1. Total Likes Card */
+        .total-likes-card {
+            background: linear-gradient(135deg, var(--gradient-card-pink-start) 30%, var(--gradient-card-pink-end) 100%);
+            color: var(--white);
+        }
+
+        .total-likes-card .card-title {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .total-likes-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin: 5px 0 15px 0;
+        }
+
+        .total-likes-chart {
+            height: 60px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .likes-line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.3);
+            top: 50%;
+        }
+
+        .wave-svg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .demographics {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .demographic-item {
+            text-align: center;
+        }
+
+        .demo-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 5px;
+        }
+
+        .demo-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* 2. Pending Messages Card */
+        .pending-messages-card {
+            background-color: var(--card-bg);
+            /* Use card-bg defined from white */
+        }
+
+        .pending-messages-card .card-options,
+        .pending-messages-card .card-title {
+            color: var(--sub-text);
+        }
+
+        .card-large-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin: 5px 0 20px 0;
+        }
+
+        .circular-chart-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin-left: auto;
+        }
+
+        .circular-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .pending-messages-list {
+            margin-top: 10px;
+        }
+
+        .message-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .message-label-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .message-dot.female {
+            background-color: var(--primary-color);
+        }
+
+        /* Map primary color to gender dot */
+        .message-dot.male {
+            background-color: var(--ternary-color);
+        }
+
+        /* Map ternary to male dot */
+
+        .message-info .label {
+            color: var(--sub-text);
+            font-size: 0.8rem;
+        }
+
+        .message-info .value {
+            font-weight: 700;
+        }
+
+        .message-value {
+            font-weight: 700;
+        }
+
+        /* 3. Small Info Cards */
+        .small-card {
+            background-color: var(--pink-light-card);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card.teal-card {
+            background-color: var(--teal-card);
+        }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            /* Adjusted color to use main color theme */
+        }
+
+        .small-card-content .value {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .small-card-content .label {
+            color: var(--primary-color);
+            /* Adjust sub-label colors for theme mapping */
+            font-size: 0.8rem;
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            height: 6px;
+            background-color: var(--white);
+            border-radius: 3px;
+            margin-left: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--red-notification);
+            /* Map orange to progress bars as red notification does */
+            width: 60%;
+            /* Map orange fill color */
+        }
+
+        /* 4. Post Stats Card */
+        .post-stats-card {
+            grid-column: 3 / 4;
+            grid-row: 2 / 4;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+            justify-content: space-between;
+        }
+
+        .post-stats-graph-container {
+            height: 150px;
+            position: relative;
+        }
+
+        .grid-line {
+            position: absolute;
+            width: 1px;
+            background-color: var(--primary-color);
+            opacity: 0.1;
+            height: 100%;
+        }
+
+        .bar-chart-visual {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+        }
+
+        .stat-bar {
+            width: 8px;
+            background-color: var(--primary-color);
+            opacity: 0.1;
+            border-radius: 4px;
+        }
+
+        .stat-bar.active {
+            opacity: 1;
+            background-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .graph-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.5;
+        }
+
+        .days-of-week {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            color: var(--sub-text);
+            font-size: 0.8rem;
+        }
+
+        .completed-posts-mini-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mini-card-icon-value {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .completed-posts-mini-card .label {
+            font-weight: 600;
+        }
+
+        .completed-posts-mini-card .sub-label {
+            color: var(--sub-text);
+            font-size: 0.8rem;
+        }
+
+        .mini-card-large-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        /* 5. Post Activity / Table Area */
+        .post-activity-section {
+            grid-column: 1 / 3;
+            grid-row: 3 / 4;
+            margin-top: 20px;
+        }
+
+        .table-tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+
+        .table-tab {
+            font-weight: 700;
+            color: var(--sub-text);
+            cursor: pointer;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .table-tab.active {
+            color: var(--primary-color);
+            /* Updated accent for tabs to primary color */
+        }
+
+        .table-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -11px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+            /* Updated underline for tabs to primary color */
+        }
+
+        .user-tab-count {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 18px;
+            height: 18px;
+            background-color: var(--bg-color-dark);
+            /* Re-purposing dark bg color for indicator background */
+            color: var(--white);
+            border-radius: 50%;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+
+        .post-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .post-table-row {
+            display: grid;
+            grid-template-columns: 48px minmax(0, 1fr) 100px 60px 80px 40px;
+            gap: 15px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .post-table-row.last {
+            border-bottom: none;
+        }
+
+        .table-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .table-post-title {
+            font-weight: 600;
+        }
+
+        .table-post-sub {
+            color: var(--sub-text);
+            font-size: 0.8rem;
+        }
+
+        .table-post-info-cell {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-tag {
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            /* Teal tag for Company and other status updates */
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .table-tag.persona-tag {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        /* Map to light green bg and teal text */
+
+        .table-icon-label-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-label-icon {
+            color: var(--sub-text);
+        }
+
+        .percentage-change {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .change-icon-down {
+            color: var(--red-notification);
+        }
+
+        /* Down arrows in red accent to ternary */
+        .change-icon-up {
+            color: var(--primary-color);
+        }

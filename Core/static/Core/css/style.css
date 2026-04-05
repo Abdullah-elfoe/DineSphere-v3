@@ -1,0 +1,1057 @@
+@import url('variables.css');
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-size: 2rem;
+    /* size of the spoon */
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.05s linear;
+    z-index: 9999;
+}
+
+.content-dimmed {
+    transition: opacity 0.3s ease;
+    opacity: 0.5;
+    pointer-events: none;
+    /* Block interaction */
+}
+
+/* ================================================= */
+/* Hero Section */
+/* ================================================= */
+.hero {
+    background-color: var(--primary-color);
+    background-image: url('../images/herobackdrop.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100vh;
+    color: var(--secondary-color);
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--primary-color);
+    opacity: 0.85;
+    pointer-events: none;
+    z-index: 0;
+}
+
+nav,
+.hero-textbox {
+    position: relative;
+    z-index: 1;
+}
+
+nav {
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    font-size: large;
+    padding: 0 5px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: var(--secondary-color);
+}
+
+nav p {
+    font-size: xx-large;
+    font-weight: 700;
+}
+
+.nav-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-actions a {
+    padding: 8px 16px;
+    text-decoration: none;
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+/* ================================================= */
+/* Hero Textbox */
+/* ================================================= */
+.hero-textbox {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 20vh;
+}
+
+.hero-wrapper {
+    width: 50%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 0 1rem;
+}
+
+.hero-wrapper h1 {
+    font-size: 4rem;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.hero-wrapper div {
+    font-size: 1.2rem;
+    line-height: 1.5;
+}
+
+/* ================================================= */
+/* Searchbar */
+/* ================================================= */
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 1112px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 800px;
+    width: 100%;
+}
+
+.city-select {
+    border: none;
+    padding: 12px 16px;
+    font-size: 16px;
+    outline: none;
+    background: #fff;
+    border-right: 1px solid #eee;
+}
+
+.search-input {
+    flex: 1;
+    border: none !important;
+    outline: none;
+    padding: 12px 16px;
+    font-size: 16px;
+    color: #333;
+
+}
+
+.search-input::placeholder {
+    font-style: italic;
+    color: #999;
+}
+
+.search-btn {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.search-btn:hover {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: 1px solid white;
+}
+
+/* ================================================= */
+/* Hamburger/Mobile Menu (Fixed Alignment) */
+/* ================================================= */
+
+/* Container to ensure both buttons are in the same spot */
+.nav-toggle-container {
+    display: none;
+    position: relative;
+    z-index: 9001;
+    height: 38px;
+    /* Added height for flow on mobile */
+    width: 38px;
+    /* Added width for flow on mobile */
+}
+
+/* Base styles for the toggle buttons - ABSOLUTE and CENTERED for exact alignment */
+.hamburger,
+.mobile-close-nav {
+    display: none;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    position: absolute;
+    top: 50%;
+    /* Center vertically in the container */
+    right: 0;
+    transform: translateY(-50%);
+    color: var(--secondary-color);
+    font-size: 1.8rem;
+    line-height: 1;
+    width: 38px;
+    height: 38px;
+    box-sizing: border-box;
+    transition: all 0.3s;
+}
+
+.hamburger-line {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--secondary-color);
+    margin: 4px 0;
+    transition: all 0.3s;
+}
+
+.mobile-close-nav {
+    font-size: 2.5rem;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+}
+
+/* Mobile menu container (Full overlay, translucent backdrop) */
+.mobile-menu {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.7);
+    backdrop-filter: blur(6px);
+    z-index: 9000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Mobile menu inner panel (The sliding part) */
+.mobile-menu-inner {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 80%;
+    max-width: 320px;
+    background: rgba(26, 26, 46, 0.98);
+    color: white;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+    transform: translateX(100%);
+    transition: transform 0.3s ease-out;
+    padding-top: 4rem;
+    padding-left: 2rem;
+}
+
+/* Active state for menu */
+.mobile-menu.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mobile-menu.active .mobile-menu-inner {
+    transform: translateX(0);
+}
+
+.mobile-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.mobile-menu a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.mobile-menu a:hover {
+    color: var(--ternary-color);
+}
+
+/* ================================================= */
+/* Media Queries for Hero and Menu (Simplified) */
+/* ================================================= */
+@media (max-width: 850px) {
+
+    nav ul.nav-items,
+    nav .nav-actions {
+        display: none;
+    }
+
+    /* Show hamburger/cross container on mobile */
+    .nav-toggle-container {
+        display: block;
+    }
+
+    .hamburger {
+        display: block;
+        opacity: 1;
+    }
+
+    /* Initial mobile state */
+
+    /* Active state swaps the display properties via JS */
+
+    /* Hero Textbox Adjustment */
+    .hero {
+        background-attachment: scroll;
+    }
+
+    .hero-textbox {
+        height: auto;
+        padding: 1.5rem 0;
+        align-items: flex-start;
+    }
+
+    .hero-wrapper {
+        width: 90%;
+        height: auto;
+        padding: 0 1rem;
+    }
+
+    .hero-wrapper h1 {
+        font-size: 2.5rem;
+    }
+
+    /* Search Bar Stacking */
+    .search-bar {
+        flex-direction: column;
+        border-radius: 10px;
+        box-shadow: none;
+        width: 100%;
+        /* max-width: none; */
+        background: transparent;
+    }
+
+    .city-select,
+    .search-input,
+    .search-btn {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        padding: 14px 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .city-select,
+    .search-input {
+        border: none;
+        border-right: none;
+    }
+
+    .search-btn {
+        margin-bottom: 0;
+    }
+}
+
+/* Serachbar Ended */
+
+
+
+/* Footer started */
+.site-footer {
+    /* Use the same hero backdrop as the footer background. Keep a color tint via a pseudo-element
+     so the image remains visible but tinted by the primary color. */
+    background-color: transparent;
+    background-image: url('../images/herobackdrop.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Keep the image fixed in the viewport so it matches the hero's fixed background */
+    background-attachment: fixed;
+    color: var(--secondary-color);
+    margin-top: 10px;
+    padding: 4rem 0 0;
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Poster section: use the same backdrop + tint so it visually matches hero/footer */
+.poster {
+    background-color: transparent;
+    background-image: url('../images/herobackdrop.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* fixed so content scrolls over the image like the hero/footer */
+    background-attachment: fixed;
+    padding: 2.5rem 1.5rem;
+    color: var(--text-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.poster::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--primary-color);
+    opacity: 0.75;
+    /* adjust for stronger/weaker tint */
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Ensure poster children are above the overlay */
+.poster-text,
+.poster-image {
+    position: relative;
+    z-index: 1;
+}
+
+/* Tint overlay so footer keeps the brand color but shows the image underneath */
+.site-footer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--primary-color);
+    opacity: 0.85;
+    /* adjust to increase/decrease tint */
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Ensure footer content sits above the overlay */
+.footer-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Main Content Grid */
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    /* Logo/Text | Site Map | Legal */
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        padding: 0 1rem 3rem;
+    }
+
+    /* Mobile fallback: background-attachment fixed can be ignored or cause rendering issues on mobile */
+    .site-footer {
+        background-attachment: scroll;
+    }
+}
+
+/* Column Styles */
+.footer-col-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    /* color: var(--secondary-color); */
+    /* Contrast for titles */
+}
+
+.footer-link-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-link-list a {
+    color: white;
+    text-decoration: none;
+    line-height: 2.2;
+    transition: color 0.2s;
+    font-weight: 400;
+}
+
+.footer-link-list a:hover {
+    color: white;
+    /* Hover effect */
+    text-decoration: underline;
+}
+
+/* Company Info (Left Column) */
+.company-info .logo {
+    display: flex;
+    align-items: center;
+    font-weight: 900;
+    font-size: 1.5rem;
+    /* color: var(--ternary-color); */
+    margin-bottom: 1rem;
+}
+
+.company-info .logo .logo-icon {
+    /* Styling the logo icon placeholder to match the triangular shape */
+    font-size: 2rem;
+    margin-right: 0.5rem;
+    /* Using a combination of the primary and secondary colors for the icon */
+    /* color: var(--ternary-color); */
+    /* text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); */
+}
+
+.company-info p {
+    line-height: 1.6;
+    max-width: 400px;
+}
+
+/* Social Icons */
+.social-icons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+    font-size: 1.2rem;
+    /* background-color: red; */
+}
+
+.social-icons a {
+    color: var(--footer-text);
+    transition: color 0.2s;
+}
+
+.social-icons a:hover {
+    color: var(--ternary-color);
+}
+
+/* Back to Top Button */
+.back-to-top {
+    display: inline-block;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border-color: var(--secondary-color);
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.back-to-top:hover {
+    background: transparent;
+    color: var(--secondary-color) !important;
+
+}
+
+.back-to-top i {
+    margin-right: 0.5rem;
+}
+
+/* Copyright Strip (Using Ternary Color) */
+.copyright-strip {
+    background-color: var(--ternary-color);
+    text-align: center;
+    padding: 0.75rem 0;
+    font-size: 0.8rem;
+    color: white;
+    /* Ensuring text is readable against the orange */
+    margin-top: 1rem;
+}
+
+/* Abstract Background Lines (Mimics the geometric design) */
+.abstract-lines {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.2;
+}
+
+.abstract-lines::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 800px;
+    height: 800px;
+    /* Creating the angled lines with a rotated linear gradient */
+    background: repeating-linear-gradient(-45deg,
+            rgba(255, 255, 255, 0),
+            rgba(255, 255, 255, 0) 100px,
+            var(--secondary-color) 100px,
+            var(--secondary-color) 110px);
+    transform: rotate(15deg) translate(200px, 300px);
+    clip-path: polygon(75% 0, 100% 100%, 0 100%, 0 75%);
+}
+
+
+/* ================================================= */
+/* NEW: Content Wrapper Dimming Style */
+/* This applies when the menu is active */
+/* ================================================= */
+/* ================================================= */
+/* Search Page Styles */
+/* ================================================= */
+
+.search-filters-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-bottom: 1px solid #eee;
+}
+
+/* Sorting Buttons */
+.sorting-options .filter-btn {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    margin-right: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.sorting-options .filter-btn.active,
+.sorting-options .filter-btn:hover {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border-color: var(--primary-color);
+}
+
+/* View Toggles (List/Grid) */
+.view-toggles {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.view-toggles .view-btn {
+    background: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #666;
+    transition: background 0.2s;
+}
+
+.view-toggles .view-btn.active {
+    background-color: #eee;
+    color: var(--primary-color);
+}
+
+.view-toggles .view-btn:first-child {
+    border-right: 1px solid #ccc;
+}
+
+/* ================================================= */
+/* Search Result Card (BASE & LIST VIEW) */
+/* ================================================= */
+
+.results-list,
+.results-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    gap: 30px;
+}
+
+.results-list {
+    display: flex;
+    flex-direction: column;
+    /* Default for list view */
+}
+
+.result-card {
+    display: flex;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+    background: white;
+    position: relative;
+    cursor: pointer;
+}
+
+.result-card:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.result-card-image {
+    width: 350px;
+    /* Fixed width for list view image */
+    height: 250px;
+    flex-shrink: 0;
+}
+
+.result-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.result-card-details {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-title-section h3,
+.result-card-details h3 {
+    font-size: 1.4rem;
+    margin: 0.5rem 0 0.8rem;
+    color: var(--primary-color);
+    line-height: 1.2;
+}
+
+.result-card-details p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0 0 0.5rem;
+}
+
+.card-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 1rem;
+}
+
+.card-rating span.stars {
+    color: var(--ternary-color);
+}
+
+.card-rating span.rating-score {
+    font-weight: 600;
+}
+
+.card-info-row {
+    display: flex;
+    gap: 20px;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 10px;
+}
+
+.card-info-row span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.card-price-section {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Price top-right in list view */
+}
+
+.card-price-section h4 {
+    font-size: 1.8rem;
+    margin: 0;
+    color: var(--primary-color);
+}
+
+.guest-favorite {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 50px;
+    z-index: 10;
+}
+
+/* ================================================= */
+/* GRID VIEW STYLES */
+/* ================================================= */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.results-grid .result-card {
+    flex-direction: column;
+    /* Stacks image and details vertically */
+    width: 100%;
+}
+
+.results-grid .result-card-image {
+    width: 100%;
+    height: 200px;
+    /* Shorter image height in grid */
+}
+
+.results-grid .result-card-details {
+    flex-direction: column;
+    /* Stack price below details in grid */
+    gap: 10px;
+}
+
+.results-grid .card-price-section {
+    text-align: left;
+    margin-top: 1rem;
+    align-self: flex-start;
+}
+
+
+/* logout  */
+
+#logoutModal {
+    border: none;
+    border-radius: 8px;
+    padding: 20px 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    min-width: 300px;
+}
+
+#logoutModal::backdrop {
+    /* Optional: style the shaded background area */
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    /* Align buttons to the right */
+    gap: 10px;
+}
+
+.modal-actions button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#confirmLogout {
+    background-color: #dc3545;
+    /* Red for Yes/Logout */
+    color: white;
+}
+
+#cancelLogout {
+    background-color: #f8f9fa;
+    /* Light background for No/Stay */
+    color: #212529;
+    border: 1px solid #ced4da;
+}
+
+
+.fav-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    z-index: 10;
+}
+
+.fav-btn i.fa-solid {
+    color: #ff4d4d;
+}
+
+.price-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(5px);
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    color: #333;
+}
+
+.card-info {
+    padding: 15px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.restaurant-tag {
+    color: var(--ternary-color);
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.restaurant-name {
+    font-size: 1.1rem;
+    margin: 5px 0;
+    color: #111;
+}
+
+.restaurant-desc {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.card-footer {
+    border-top: 1px solid #f9f9f9;
+    padding-top: 10px;
+    font-size: 0.75rem;
+    color: #999;
+}
+
+/* --- Responsive Carousel Styles --- */
+.carousel-container {
+    position: relative;
+    overflow: hidden;
+    /* Hide the cards outside the view */
+    padding: 20px 0;
+}
+
+
+
+/* Base Card Style */
+.modern-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #f0f0f0;
+    flex-shrink: 0;
+    /* Prevents cards from squishing */
+
+    /* Responsive Widths */
+    width: calc(100% - 40px);
+    /* Mobile default: One card per view */
+}
+
+/* Desktop sizing */
+@media (min-width: 769px) {
+    .modern-card {
+        width: calc(33.33% - 20px);
+        /* 3 cards on tablet/small desktop */
+    }
+}
+
+@media (min-width: 1200px) {
+    .modern-card {
+        width: calc(20% - 20px);
+        /* 5 cards on large screens */
+    }
+}
+
+/* Fix for the image wrapper to maintain aspect ratio */
+.card-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 200px;
+}
+
+.main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.4s ease-out;
+    /* Add this to prevent the last card from hugging the edge */
+    padding-right: 50px;
+}
+
+/* Ensure buttons are always on top and clickable */
+.carousel-btn {
+    z-index: 10;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Keep your existing fav-btn, price-badge, and card-info styles as they were */
+
+
+/* 1. Remove fit-content from the main wrapper */
+#contentWrapper {
+    height: auto !important;
+    min-height: 100vh;
+    display: scroll;
+    /* Ensure it's not a restricted flex container */
+}
+
+/* 2. Allow the main page to grow naturally */
+#main-page {
+    height: auto !important;
+    display: block;
+    overflow: visible !important;
+    /* This ensures shadows/cards aren't cut off */
+    padding-bottom: 60px;
+    /* Buffer for the bottom carousel */
+}
+
+/* 3. Ensure the carousels stack naturally */
+.carousels {
+    display: block;
+    /* Change from flex to block if you had it as flex */
+    height: auto;
+}

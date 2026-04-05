@@ -1,0 +1,166 @@
+{% extends "Core/base.html" %}
+{% load static %}
+{% block links %}
+    <link rel="stylesheet" href="{% static 'Reservations/css/checkout.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock links %}
+{% block title %} Checkout {% endblock %}
+{% block main %}
+    
+    <div id="checkout-container" class="checkout-wrapper">
+        
+        <!-- LEFT PANEL: Checkout Form -->
+        <form class="left-panel" action="../placeOrder/" method="post">
+            {% csrf_token %}
+            <!-- Title and Back Button -->
+            <div class="form-header">
+                <!-- Back Button (↶) -->
+                <button onclick="window.history.back()" class="back-button" aria-label="Go back">
+                    &#x21B6;
+                </button>
+                <h1>Checkout</h1>
+            </div>
+
+            <!-- Email Input -->
+            <div class="form-section input-group">
+                <label for="username">Username</label>
+                <input value="{{request.user.username}}" type="text" id="username" name="thisisusername" class="input-checkout" disabled onfocus="this.style.outline='none';this.style.boxShadow='none'" > 
+            </div>
+
+            <!-- Card Number Input -->
+            <div class="form-section input-group">
+                <label for="card-number">Card number</label>
+                <div class="card-number-wrapper">
+                    <input type="text" id="card-number" name="cn" class="input-checkout" placeholder="1234 5678 XXXX XXXX" required onfocus="this.style.outline='none';this.style.boxShadow='none'">
+                    <div class="visa-tag">VISA</div>
+                </div>
+            </div>
+
+            <!-- Expiration Date and Security Code -->
+            <div class="date-cvv-grid input-group form-section" style="border-bottom: none !important;">
+                <div>
+                    <label>Expiration date</label>
+                    <div class="select-group">
+                        <select class="input-checkout" required>
+                            <option>Month</option>
+                            <option value="01">01</option>
+                            <option value="02">02</option>
+                            <option value="12">12</option>
+                        </select>
+                        <select class="input-checkout" required>
+                            <option>Year</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2030">2030</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="security-code" style="color: transparent;">Security Code</label>
+                    <input type="text" id="security-code" class="input-checkout" placeholder="Security code" required onfocus="this.style.outline='none';this.style.boxShadow='none'">
+                </div>
+            </div>
+
+            <!-- Name on Card -->
+            <div class="form-section input-group" style="margin-bottom: 2.5rem;">
+                <input type="text" class="input-checkout" placeholder="Name on the card" name="card-name" required onfocus="this.style.outline='none';this.style.boxShadow='none'">
+            </div>
+            
+            
+            
+            <!-- Terms and Order Button -->
+            <div class="submit-btn-wrapper">
+                <p class="terms-text">
+                    By placing this order you agree to the 
+                    <a href="#">Terms and Conditions</a>
+                </p>
+                <button type="submit" class="submit-btn">
+                    Place Order
+                </button>
+            </div>
+            <input type="hidden" name="s_time" value="{{start_time}}">
+            <input type="hidden" name="date" value="{{date}}">
+
+        </form>
+
+        <!-- RIGHT PANEL: Order Summary and Support -->
+        <div class="right-panel">
+            
+            <!-- Product List -->
+            <div class="product-list">
+                
+                <!-- Product 1: ACCORDION ITEM -->
+                <div class="product-item" onclick="toggleAccordion(this)">
+                    <!-- Accordion Header/Summary -->
+                    <div class="product-details">
+                        <div class="product-info-group">
+                            <!-- Placeholder Image 1 -->
+                            <img src="https://placehold.co/70x70/ffffff/111827?text=Hair+Dryer" onerror="this.src='https://placehold.co/70x70/ffffff/111827?text=Item';" class="product-img" alt="Nano Titanium Hair Dryer">
+                            <div>
+                                <p class="product-name">{{name}}</p>
+                                <p class="product-description">Best Local Restaurant Ideal for burgers</p>
+                            </div>
+                        </div>
+                        <span class="product-price">{{price}}</span>
+                    </div>
+
+                    <!-- Accordion Content (Key-Value Pairs and Edit Button) -->
+                    <div class="accordion-content">
+                        <div class="space-y-3 pt-2">
+                            <!-- Key-Value Pair 1 -->
+                            <div class="details-input-group">
+                                <input type="text" value="Reservation" class="details-input key" readonly onclick="event.stopPropagation();" disabled>
+                                <input type="text" value="{% for table in tables %} {{ table.name }}, {% endfor %}" class="details-input value" onclick="event.stopPropagation();" disabled>
+                            </div>
+                            <!-- Key-Value Pair 2 -->
+                            <div class="details-input-group">
+                                <input type="text" value="Date Time" class="details-input key" readonly onclick="event.stopPropagation();" disabled>
+                                <input type="text" value="{{date}} {{start_time}} to {{end_time}}" class="details-input value" onclick="event.stopPropagation();" disabled>
+                            </div>
+                            
+                            <!-- Edit Button -->
+                            <div class="edit-button-wrapper">
+                                <button class="edit-button" onclick="event.stopPropagation();">
+                                    Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+
+            <!-- Price Summary -->
+            <div class="price-summary">
+                <div class="price-row total-price">
+                    <span class="label">Total price:</span>
+                    <span class="value">{{ price }}</span>
+                </div>
+                <div class="price-row vat-row">
+                    <span class="label">Vat: 0%</span>
+                    <span class="value">$00.00</span>
+                </div>
+            </div>
+            
+            <!-- Support Section -->
+            <div class="support-section">
+                <p class="support-title">Support</p>
+                <p class="support-info">+92 305 2651404 (International)</p>
+                <p class="support-info" style="margin-bottom: 1rem;">support@DineSphere.com (Email)</p>
+                <p class="support-note">Call us now for payment related issues</p>
+            </div>
+            
+            <!-- Money Back Guarantee -->
+            <div class="guarantee-section">
+                <p class="guarantee-title">Money Back Guarantee</p>
+                <p class="guarantee-note">within 30 days of purchase</p>
+            </div>
+
+        </div>
+
+    </div>
+    
+<script src="{% static 'Reservations/js/checkout.js' %}"></script>
+
+{% endblock main %}

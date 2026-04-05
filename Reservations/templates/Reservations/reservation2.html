@@ -1,0 +1,298 @@
+{% extends "Core/base.html" %}
+{% load static %}
+{% load range_tags %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'Reservations/css/moye.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    /* 6-Section Grid Layout */
+    .reservation-container {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr; /* Left side slightly wider */
+        gap: 25px;
+        padding: 20px;
+        max-width: 1400px;
+        margin: auto;
+    }
+
+    .section-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    /* Up Left: Booking Inputs */
+    .booking-header h1 { margin: 0; font-weight: 900; }
+    .booking-strip {
+        display: flex;
+        gap: 10px;
+        margin: 20px 0;
+    }
+    .input-rect {
+        flex: 1;
+        border: 1.5px solid #eee;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .input-rect span { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; }
+
+    /* Table Grid Selection */
+    .seating-tabs { margin-top: 20px; }
+    .table-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+    .table-item {
+        border: 2px solid #f0f0f0;
+        padding: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    .table-item.selected {
+        background-color: #111827;
+        color: #fff;
+        border-color: #111827;
+    }
+    .table-item p { margin: 2px 0; font-size: 0.85rem; }
+
+    /* Middle Right: Summary Card */
+    .summary-sticky {
+        position: sticky;
+        top: 20px;
+        border: 2px solid #111827;
+    }
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        margin: 12px 0;
+        font-weight: 600;
+    }
+    .reserve-lock-btn {
+        width: 100%;
+        background: #111827;
+        color: white;
+        padding: 15px;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .reservation-container { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="reservation-container">
+
+    <div class="section-card up-left">
+        <div class="booking-header">
+            <button onclick="window.history.back()" class="back-button">&#x21B6;</button>
+            <h1 id="r-name">{{Restaurant.name}}</h1>
+            <p style="color: #666;">{{Restaurant.title}}</p>
+        </div>
+
+        <div class="booking-strip">
+            <div class="input-rect" id="dateContainer">
+                <span>Date</span>
+                <div id="dateBtn" style="cursor:pointer; font-weight: bold;">Select Date</div>
+            </div>
+            <div class="input-rect">
+                <span>Start Time</span>
+                <input type="time" id="startTimeBtn" style="border:none; outline:none; font-weight:bold;">
+            </div>
+            <div class="input-rect">
+                <span>Duration (Hours)</span>
+                <select id="durationHrs" style="border:none; outline:none; font-weight:bold; width: 100%;">
+                    <option value="1">1 Hour</option>
+                    <option value="2">2 Hours</option>
+                    <option value="3">3 Hours</option>
+                    <option value="4">4 Hours</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="seating-tabs">
+            <h3>Available Tables</h3>
+            {% for rs in Seating %}
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #444; border-bottom: 1px solid #eee;">{{ rs.seating_type.name }}</h4>
+                <div class="table-grid">
+                    <div class="table-item" onclick="selectTable(this, '{{rs.seating_type.name}}', '{{rs.available_tables}}', '10.00')">
+                        <p><strong>Table 1</strong></p>
+                        <p>Cap: {{rs.available_tables}}</p>
+                        <p>${{prices|firstPrice}}/hr</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="section-card up-right" style="padding:0; overflow:hidden;">
+        <img src="{{restaurant.image.url}}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://placehold.co/800x600?text=Restaurant+Image'">
+    </div>
+
+    <div class="section-card middle-left">
+        <h3>Rate Us</h3>
+        <div class="rating-main" style="display: flex; align-items: center; gap: 15px;">
+            <span style="font-size: 3rem; font-weight: 800;">{{ratings.average_rating}}</span>
+            <div>
+                <div class="rating-stars">
+                    {% for star in 5|range_num %}
+                        <i class="{% if ratings.average_rating >= forloop.counter %}fas{% else %}far{% endif %} fa-star" style="color: gold;"></i>
+                    {% endfor %}
+                </div>
+                <p style="margin:0; font-size: 0.8rem; color: #888;">{{ratings.total_reviews}} reviews</p>
+            </div>
+        </div>
+        <div class="rating-bars" style="margin-top: 15px;">
+            {% for star, val in ratings.items %}
+                {% if 'star' in star %}
+                <div class="rating-bar-row" style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+                    <span style="width:20px;">{{star|first}}</span>
+                    <div style="flex:1; height:8px; background:#eee; border-radius:4px;">
+                        <div style="width:'{{val}}%'; height:100%; background:gold; border-radius:4px;"></div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="section-card middle-right summary-sticky">
+        <h3>Reservation Details</h3>
+        <div class="summary-line">
+            <span>Capacity</span>
+            <span id="card-capacity">0</span>
+        </div>
+        <div class="summary-line">
+            <span>Hourly Charges</span>
+            <span id="card-hourly">$0.00</span>
+        </div>
+        <hr>
+        <div class="summary-line" style="font-size: 1.2rem; color: #111827;">
+            <span>Total</span>
+            <span id="card-total">$0.00</span>
+        </div>
+        <button class="reserve-lock-btn" onclick="placeOrder()">
+            <i class="fas fa-lock"></i> Reserve and Lock
+        </button>
+    </div>
+
+    <div class="section-card bottom-left">
+        <h3>About Restaurant</h3>
+        <p style="line-height: 1.6; color: #555;">{{Restaurant.about_restaurant}}</p>
+    </div>
+
+    <div class="section-card bottom-right">
+        <h2 class="reviews-title">What Our Guests Say</h2>
+
+        <div class="carousel-container">
+            <div class="carousel-track" id="testimonial-track">
+                {% if not testimonials.count > 0 %}
+                <p>No Testimonails to show</p>
+                {% else %}
+                {% for testimonial in testimonials %}
+                <div class="testimonial-slide">
+                    <div class="testimonial-header">
+                        <img src="https://placehold.co/60x60/ffffff/000000?text={{testimonial.creator_name|initials}}"
+                    alt="Photo" class="testimonial-img">
+                <span class="testimonial-name">{{testimonial.creator_name}}</span>
+            </div>
+            <i class="fas fa-quote-left quote-icon"></i>
+            <p class="testimonial-content">{{testimonial.text}}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+
+            </div>
+        </div>
+
+        <div class="carousel-dots" id="carousel-dots"></div>
+    </div>
+
+
+</div>
+
+<form action="../../checkout/" method="post" id="reservationForm" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="date" id="form_date">
+    <input type="hidden" name="start_time" id="form_start">
+    <input type="hidden" name="end_time" id="form_end">
+    <input type="hidden" name="seating" id="form_seating">
+    <input type="hidden" name="price" id="form_price">
+    <input type="hidden" name="party_size" id="form_party">
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // Initialize Date Picker
+    flatpickr("#dateBtn", {
+        minDate: "today",
+        onChange: function(selectedDates, dateStr) {
+            document.getElementById('dateBtn').innerText = dateStr;
+            document.getElementById('form_date').value = dateStr;
+        }
+    });
+
+    function selectTable(element, type, cap, price) {
+        // Toggle background color via class
+        document.querySelectorAll('.table-item').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+
+        // Update Summary Card
+        document.getElementById('card-capacity').innerText = cap;
+        document.getElementById('card-hourly').innerText = "$" + price;
+        
+        // Form Data
+        document.getElementById('form_seating').value = type;
+        document.getElementById('form_price').value = price;
+        document.getElementById('form_party').value = cap;
+
+        updateTotal();
+    }
+
+    function updateTotal() {
+        const hourly = parseFloat(document.getElementById('form_price').value) || 0;
+        const hours = parseInt(document.getElementById('durationHrs').value) || 1;
+        const total = hourly * hours;
+        document.getElementById('card-total').innerText = "$" + total.toFixed(2);
+    }
+
+    document.getElementById('durationHrs').addEventListener('change', updateTotal);
+
+    function placeOrder() {
+        const start = document.getElementById('startTimeBtn').value;
+        const date = document.getElementById('form_date').value;
+        
+        if (!start || !date || !document.getElementById('form_seating').value) {
+            alert("Please select Date, Time, and a Table.");
+            return;
+        }
+
+        // Calculate end time based on start + duration
+        const [h, m] = start.split(':');
+        const duration = parseInt(document.getElementById('durationHrs').value);
+        const endH = (parseInt(h) + duration) % 24;
+        const endTime = `${endH.toString().padStart(2, '0')}:${m}`;
+
+        document.getElementById('form_start').value = start;
+        document.getElementById('form_end').value = endTime;
+        
+        document.getElementById('reservationForm').submit();
+    }
+</script>
+{% endblock main %}
