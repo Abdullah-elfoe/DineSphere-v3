@@ -302,3 +302,16 @@ def get_items(request):
         return JsonResponse({'items': items})
     except Exception as e:
         return JsonResponse({'items': [], 'error': str(e)}, status=400)
+    
+
+# def get_unfinished_booking(request, restaurant_id):
+#     booking = Booking.objects.filter(
+#         restaurant_id=restaurant_id,
+#         card_number='',
+#         status__iexact='pending'
+#     ).first()
+#     if booking is not None:
+#         {
+            
+#         }
+#     return JsonResponse({'booking': booking})
