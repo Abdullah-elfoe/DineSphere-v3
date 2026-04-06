@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .Services import get_items
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -35,11 +36,14 @@ urlpatterns = [
     path('holidays/update/<int:id>/', views.updateHolidays, name='update_holidays'),
     path('holidays/delete/<int:id>/', views.deleteHolidays, name='delete_holidays'),
 
+    # getting table size and seating type
+    path('get-items/', get_items, name='get_items'),
 
     path('download-logs/', views.download_logs, name='download_logs'),
 
     # Analytics view, entry point for the dashboard
     path("", views.analytics, name="analytics"),
+    path("<str:tab>/", views.analytics),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     

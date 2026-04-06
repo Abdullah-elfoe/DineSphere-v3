@@ -529,3 +529,32 @@
     opacity: 0.9;
     transform: translateY(-2px);
 }
+
+.tab-content {
+    /* Prevents layout shift during tab switching */
+    width: 100%;
+    animation: slideIn 0.25s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Make the dynamic form inputs look as modern as your static ones */
+.dynamic-form-container p {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.dynamic-form-container input, 
+.dynamic-form-container select, 
+.dynamic-form-container textarea {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    outline: none;
+}

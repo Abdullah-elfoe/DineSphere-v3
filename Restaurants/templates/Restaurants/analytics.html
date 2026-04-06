@@ -173,13 +173,21 @@
 
     <div class="card post-activity-section">
         <div class="table-tabs">
-            <div class="table-tab active" onclick="switchTab('logs', this)">Logs</div>
+            <div class="table-tab {% if not active_dynamic_tab %}active{% endif %}" onclick="switchTab('logs', this)">Logs</div>
             <div class="table-tab" onclick="switchTab('configs', this)">Configs</div>
+            {% if active_dynamic_tab %}
+            <div id="dynamic-tab-header" class="table-tab {% if active_dynamic_tab %}active{% endif %}" onclick="switchTab('dynamic', this)"
+                style="display: flex; align-items: center; gap: 10px;">
+                <span id="dynamic-tab-title">{{ active_dynamic_tab }}</span>
+                <i class="fas fa-times" onclick="closeDynamicTab(event)"
+                    style="font-size: 0.7rem; cursor: pointer; color: var(--red-notification);"></i>
+            </div>
+            {% endif %}
         </div>
 
-        <div id="tab-logs" class="tab-content">
+        <div id="tab-logs" class="tab-content" style="display: {% if not active_dynamic_tab %}block{% else %}none{% endif %};">
             <div class="post-table">
-                 <div class="post-table-row">
+                <div class="post-table-row">
                     <div class="table-img"><img src="{{ CP__OwnerProfile.image.url }}" alt=""></div>
                     <div class="table-post-info-cell">
                         <div class="table-post-title">{{ CP__OwnerProfile}}</div>
@@ -215,7 +223,7 @@
                     </div>
                 </div>
                 {% endfor %}
-        
+
             </div>
         </div>
 
@@ -246,6 +254,22 @@
                 </div>
             </form>
         </div>
+        {% if active_dynamic_tab %}
+        <div id="tab-dynamic" class="tab-content" style="display: '{% if active_dynamic_tab %}block{% else %}none{% endif %}';">
+            <form method="POST" action="{% url 'analytics' %}" class="config-form">
+                {% csrf_token %}
+                <h3 style="margin-bottom:20px; color:var(--primary-color);">Manage {{ active_dynamic_tab }}</h3>
+                <div class="dynamic-form-container">
+                    {{ form.as_p }}
+                </div>
+                <input type="hidden" name="active_tab_name" value="{{ active_dynamic_tab }}">
+
+                <div class="form-footer" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -267,13 +291,19 @@
         // 3. Hide all content sections
         document.getElementById('tab-logs').style.display = 'none';
         document.getElementById('tab-configs').style.display = 'none';
+        if (document.getElementById('tab-dynamic')) {
+            document.getElementById('tab-dynamic').style.display = 'none';
+        }
 
         // 4. Show the selected section
         if (tabName === 'logs') {
             document.getElementById('tab-logs').style.display = 'block';
-        } else {
+        } else if(tabName === 'configs') {
             document.getElementById('tab-configs').style.display = 'block';
+        } else if(tabName === 'dynamic') {
+            document.getElementById('tab-dynamic').style.display = 'block';
         }
     }
+
 </script>
 {% endblock %}

@@ -263,3 +263,42 @@ def isStaff(user):
         user=user,
         role="STAFF"
     ).exists()
+
+
+def getForm(tab:str, data=None):
+
+    match tab.lower():
+        case "seatingtype":
+            return SeatingTypeForm(data=data)
+        case "tablesize":
+            return TableSizeForm(data=data)
+        case _:
+            raise ValueError("Invalid tab name")
+        
+
+
+from django.http import JsonResponse
+
+def get_items(request):
+    item_type = request.GET.get('type', '').lower()
+    items = []
+
+    try:
+        if item_type == 'seatingtype':
+            data = SeatingType.objects.all()
+            # SeatingType only has 'name'
+            items = [{'primary': obj.name, 'secondary': 'Area Type'} for obj in data]
+            
+        elif item_type == 'tablesize':
+            data = TableSize.objects.all()
+            # TableSize has 'size' and 'capacity'
+            items = [
+                {
+                    'primary': f"{obj.size}" if obj.size else "Standard", 
+                    'secondary': f"{obj.capacity} Seats"
+                } for obj in data
+            ]
+
+        return JsonResponse({'items': items})
+    except Exception as e:
+        return JsonResponse({'items': [], 'error': str(e)}, status=400)

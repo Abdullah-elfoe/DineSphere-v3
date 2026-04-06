@@ -9,6 +9,7 @@ from .Services import (
     add_seating_type,
     add_tabletype,
     add_table,
+    getForm,
     perform_dynamic_update,
     getAnalytics,
     isStaff,
@@ -105,7 +106,23 @@ def staff_management(request):
     return render(request, "Restaurants/staff_management.html", context)
 
 
-def analytics(request):
+def analytics(request, tab=None):
+    # NEW: Handle Form Submission
+    if request.method == "POST":
+    # 1. Identify which form we are processing from the hidden input
+        active_tab = request.POST.get('active_tab_name')
+        
+        if active_tab:
+            # 2. Bind the POST data to the specific form class
+            form = getForm(active_tab, data=request.POST)
+            
+            # 3. Validate and Save
+            if form and form.is_valid():
+                form.save()
+                # Success! Redirect to clear the POST data and the dynamic tab
+            return redirect("analytics")
+            
+
     if RestaurantStaff.objects.filter(user=request.user).first().role != "OWNER":
         print("Not an owner, redirecting...")
         return redirect("/business/staff-management/")
@@ -118,6 +135,13 @@ def analytics(request):
 
     restaurant_staff = get_current_restaurant_staff(restaurant_id)
     context["all_staff"] = restaurant_staff
+
+    if tab:
+        try:
+            context["form"] = getForm(tab)
+            context["active_dynamic_tab"] = tab
+        except:
+            print("FAILED")
 
     return render(request, "Restaurants/analytics.html", context)
 
@@ -149,8 +173,10 @@ def tables(request):
         return redirect("/business/tables/")
 
 
+
+
 def holidays(request):
-    restaurant_id = request.session["selected_restaurant_id"]
+    restaurant_id = request.session["selected_restaurant_id"] 
     restaurant = Restaurant.objects.get(id=restaurant_id)
 
     if request.method == "GET":

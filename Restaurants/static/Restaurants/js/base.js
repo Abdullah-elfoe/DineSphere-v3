@@ -272,3 +272,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     syncUI(); 
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dynamicHeader = document.getElementById('header-dynamic');
+    if (dynamicHeader) {
+        // Force switch to the new dynamic tab on page load
+        switchTab('dynamic', dynamicHeader);
+    }
+});
+
+function switchTab(tabName, element) {
+    // 1. Reset all tab headers
+    document.querySelectorAll('.table-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // 2. Activate current tab header
+    element.classList.add('active');
+
+    // 3. Hide ALL content sections in the stack
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+    });
+
+    // 4. Show the specific content for this tab
+    const targetContent = document.getElementById('tab-' + tabName);
+    if (targetContent) {
+        targetContent.style.display = 'block';
+    }
+}
+
+function closeDynamicTab(event) {
+    event.stopPropagation();
+
+    window.location.href = "/business/"
+    
+    // Remove the elements from DOM
+    const header = document.getElementById('header-dynamic');
+    const content = document.getElementById('tab-dynamic');
+    
+    if (header) header.remove();
+    if (content) content.remove();
+
+    // Revert to Logs
+    switchTab('logs', document.getElementById('header-logs'));
+    
+    // Clean URL so refresh doesn't bring it back
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+}

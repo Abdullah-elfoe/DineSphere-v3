@@ -147,24 +147,71 @@
 {% endblock %}
 
 {% block bottom_navigation %}
- <button type="button" class="panel-btn">
+ <button type="button" class="panel-btn" onclick="window.location.href='{% url 'analytics' %}seatingtype/'">
     <i class="fas fa-chair"></i> Add Seating Type
 </button>
 
-<button type="button" class="panel-btn">
+<button type="button" class="panel-btn" onclick="fetchData('seatingtype')">
     <i class="fas fa-th-list"></i> View Seating Type
 </button>
 
-<button type="button" class="panel-btn ">
+<button type="button" class="panel-btn" onclick="window.location.href='{% url 'analytics' %}tablesize/'">
     <i class="fas fa-table"></i> Add Table Type
 </button>
 
-<button type="button" class="panel-btn">
+<button type="button" class="panel-btn" onclick="fetchData('tablesize')">
     <i class="fas fa-eye"></i> View Table Type
 </button>
+<div id="viewModal" class="view-modal">
+    <div class="modal-header">
+        <h3 id="modalTitle">Items</h3>
+        <button onclick="closeViewModal()" class="close-modal-btn" style="background-color: transparent; border: none; color: var(--ternary-color);"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="modalBody">
+        </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script src="{% static 'Restaurants/js/stylishgrid.js' %}"></script>
 <script src="{% static 'Restaurants/js/drawerform.js' %}"></script>
+<script>
+    // -------------------------------
+// Seating type and table size → VIEW
+// -------------------------------
+
+function fetchData(type) {
+    const modal = document.getElementById('viewModal');
+    const body = document.getElementById('modalBody');
+    const title = document.getElementById('modalTitle');
+
+    title.innerText = type === 'seatingtype' ? 'Seating Types' : 'Table Sizes';
+    body.innerHTML = '<div class="loading-spinner">Fetching data...</div>';
+    modal.style.display = 'flex';
+
+    fetch(`/business/get-items/?type=${type}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.items && data.items.length > 0) {
+                // Mapping the 'primary' and 'secondary' keys from our API
+                body.innerHTML = data.items.map(item => `
+                    <div class="list-item">
+                        <span class="item-name">${item.primary}</span>
+                        <span class="badge">${item.secondary}</span>
+                    </div>
+                `).join('');
+            } else {
+                body.innerHTML = `<div class="error-msg">No ${type} data found.</div>`;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            body.innerHTML = `<div class="error-msg">Network error. Please try again.</div>`;
+        });
+}
+function closeViewModal() {
+    document.getElementById('viewModal').style.display = 'none';
+}
+</script>
 {% endblock %}

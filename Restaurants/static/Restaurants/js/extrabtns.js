@@ -91,3 +91,4 @@ document.querySelector('.review_display_off')?.addEventListener('click', () => {
         .then(() => location.reload())
         .catch(err => console.error(err));
 });
+
