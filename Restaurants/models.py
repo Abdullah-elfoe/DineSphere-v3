@@ -67,6 +67,14 @@ class Restaurant(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     is_approved = models.BooleanField(default=False)
 
+    @property
+    def opening_hour(self):
+        return self.default_opening_hour
+
+    @property
+    def closing_hour(self):
+        return self.default_closing_hour
+
     def __str__(self):
         return self.name
 

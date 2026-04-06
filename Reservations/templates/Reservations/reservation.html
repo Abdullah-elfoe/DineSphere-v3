@@ -177,7 +177,10 @@
                 <h1 id="r-name">{{ restaurant.name }}</h1>
 
             </div>
-            <p>{{ restaurant.title }}</p>
+            <div style="display: flex; width: 100%; justify-content: space-between; height: 20px">
+                <p>{{ restaurant.title }}</p>
+                <p>{{ restaurant.opening_hour }} - {{ restaurant.closing_hour }}</p>
+            </div>
         </div>
 
         <div class="booking-strip">
@@ -191,12 +194,14 @@
             </div>
             <div class="input-rect">
                 <span>Stay Duration</span>
-                <select id="durationHrs" onchange="updateSummary()" style="border:none; font-weight:bold; width:100%;">
+                <select id="durationHrs" onchange="updateSummary()"
+                    style="border:none; font-weight:bold; width:100%; background-color: transparent;">
                     <option value="1">1 Hour</option>
                     <option value="2">2 Hours</option>
                     <option value="3">3 Hours</option>
                 </select>
             </div>
+            <div id="errorMsg" style="color:red; font-weight:bold;"></div>
         </div>
 
         <div class="seating-nav">
@@ -250,6 +255,7 @@
             <button type="button" class="post-review-btn" onclick='alert("Please log in to post a review.")'>Post
                 Review</button>
             {% endif %}
+            <button type="button" class="post-review-btn" id="clearReviewBtn">Clear</button>
         </div>
     </form>
 
@@ -325,7 +331,9 @@
 </form>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="{% static 'Reservations/js/reservation.js' %}"></script>
 <script>
+    const restaurantName = "{{ restaurant.name|escapejs }}".replace(/ /g, "_");
     // Tabbed Navigation Logic
     function openSeating(evt, seatingId) {
         var i, content, navlinks;
@@ -343,12 +351,32 @@
 
     // 1. Initialize Date Picker
     flatpickr("#dateBtn", {
-        minDate: "today",
-        onChange: function (selectedDates, dateStr) {
-            document.getElementById('dateBtn').innerText = dateStr;
-            document.getElementById('form-date').value = dateStr;
-        }
-    });
+    minDate: "today",
+    onChange: function (selectedDates, dateStr) {
+        document.getElementById('dateBtn').innerText = dateStr;
+        document.getElementById('form-date').value = dateStr;
+
+        // 🔥 Fetch unavailable tables
+        fetch(`../get-unavailable-tables/?date=${dateStr}&restaurant=${restaurantName}`)
+            .then(response => response.json())
+            .then(data => {
+                const bookedTables = data.booked_tables;
+
+                // Hide or disable tables
+                document.querySelectorAll(".table-item").forEach(table => {
+                    const tableId = parseInt(table.dataset.id);
+
+                    if (bookedTables.includes(tableId)) {
+                        table.style.display = "none";  // hide
+                        // OR:
+                        // table.classList.add("disabled");
+                    } else {
+                        table.style.display = "block"; // show again
+                    }
+                });
+            });
+    }
+});
 
     // 2. Table Selection Logic
     let selectedTables = [];
@@ -522,5 +550,21 @@
             updateCarousel();
         }, 2700);
     }
+
+    const restaurant_opening_hour = "{{ restaurant.opening_hour|time:'H:i' }}";
+    const restaurant_closing_hour = "{{ restaurant.closing_hour|time:'H:i' }}";
+
+    const input = document.getElementById("startTimeBtn");
+
+    input.addEventListener("change", () => {
+        const value = input.value;
+
+        const isValid = (value >= restaurant_opening_hour) || (value <= restaurant_closing_hour);
+
+        if (!isValid) {
+            alert("Time must be within operating hours");
+            input.value = "";
+        }
+    });
 </script>
 {% endblock main %}

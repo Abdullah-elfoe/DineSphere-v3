@@ -71,7 +71,7 @@ def placeOrder_view(request):
         name_on_the_card=card_name,
         card_number=card_number,
     )
-    return redirect("../home")
+    return redirect("/")
 
 
 @login_required
@@ -101,3 +101,38 @@ def post_review(request, Restaurant_name):
         return JsonResponse({"success": True})
 
     return JsonResponse({"success": False, "error": "Invalid request method"})
+
+
+
+# from django.http import JsonResponse
+from django.utils.dateparse import parse_date
+# from .models import Booking
+# from Restaurants.models import Restaurant
+
+def get_unavailable_tables(request):
+    restaurant_name = request.GET.get("restaurant")
+    date_str = request.GET.get("date")
+    print(restaurant_name, date_str, "PARAMS")  # Debug print
+
+    if not restaurant_name or not date_str:
+        return JsonResponse({"error": "Missing params"}, status=400)
+
+    restaurant = Restaurant.objects.get(name=restaurant_name.replace("_", " "))
+    selected_date = parse_date(date_str)
+
+    # Get bookings for that restaurant + date
+    bookings = Booking.objects.filter(
+        restaurant=restaurant,
+        booking_start_datetime__date=selected_date,
+        status=Booking.STATUS_PENDING
+    ).prefetch_related('tables')
+
+    # Collect booked table IDs
+    booked_table_ids = set()
+    for booking in bookings:
+        for table in booking.tables.all():
+            booked_table_ids.add(table.id)
+
+    return JsonResponse({
+        "booked_tables": list(booked_table_ids)
+    })
