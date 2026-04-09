@@ -20,17 +20,16 @@ Ensure the following are installed:
 ### Using HTTPS
 
 ```bash
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/Abdullah-elfoe/DineSphere-v3.git
+cd DineSphere-v3
 ```
 
 ### Using SSH
 
 ```bash
-git clone git@github.com:your-username/your-repo.git
-cd your-repo
+git clone git@github.com:Abdullah-elfoe/DineSphere-v3.git
+cd DineSphere-v3
 ```
-
 ---
 
 ## ⚙️ 2. Start MongoDB Service
