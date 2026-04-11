@@ -48,7 +48,7 @@ def booking_view(request, Restaurant_name):
 
 
 
-
+@login_required
 def checkout_view(request):
     return render(request, "Reservations/checkout.html") if request.method == "GET" else placeOrder_view(request)
 
@@ -67,6 +67,8 @@ def placeOrder_view(request):
     start_datetime = timezone.make_aware(naive_dt)
     card_name = request.POST.get("card-name")
     card_number = request.POST.get("cn")
+    if all([s_time, date, naive_dt, card_name, card_number]):
+        print("hey Debug statement")
     Booking.objects.filter(customer=request.user, status=Booking.STATUS_PENDING, booking_start_datetime=start_datetime).update(
         name_on_the_card=card_name,
         card_number=card_number,

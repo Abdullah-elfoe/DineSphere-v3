@@ -5,9 +5,6 @@ from django.http import HttpResponse, JsonResponse
 from Reservations.models import Booking
 from .Services import (
     create_restaurant_for_user,
-    add_holiday,
-    add_seating_type,
-    add_tabletype,
     add_table,
     getForm,
     perform_dynamic_update,
@@ -16,18 +13,20 @@ from .Services import (
 )
 from UsersHandling.services import (
     add_restaurant_staff,
-    remove_restaurant_staff,
     get_current_restaurant_staff,
 )
-from .forms import TableForm, TableSizeForm, RestaurantForm, SpecialDayForm, ReviewForm
+from .forms import TableForm, RestaurantForm, SpecialDayForm, ReviewForm
 from .models import Restaurant, Table, SpecialDay, Review, SeatingType
 import json
+# from django.contrib.auth.decorators import login_required
 from UsersHandling.models import RestaurantStaff
 from .services.logger import log_event
 from .services.parser import get_user_logs, format_logs_to_text
+from .decorators import restrict_access
 
 
 # Create your views here.
+
 
 
 def registration(request):
@@ -64,11 +63,15 @@ def registration(request):
             print(" i am here", str(e))
             return redirect("/")
     seating_types = SeatingType.objects.all()
-    return render(
+    if request.user.is_authenticated:
+        return render(
         request, "Restaurants/registration.html", {"seatingtype": seating_types}
     )
+    else:
+        return redirect("/uh/auth/")
 
 
+@restrict_access
 def staff_management(request):
     # 1. Get the current restaurant ID from the session
     restaurant_id = request.session.get("selected_restaurant_id")
@@ -105,7 +108,7 @@ def staff_management(request):
 
     return render(request, "Restaurants/staff_management.html", context)
 
-
+@restrict_access
 def analytics(request, tab=None):
     # NEW: Handle Form Submission
     if request.method == "POST":
@@ -145,7 +148,7 @@ def analytics(request, tab=None):
 
     return render(request, "Restaurants/analytics.html", context)
 
-
+@restrict_access
 def tables(request):
     restaurant_id = request.session["selected_restaurant_id"]
     restaurant = Restaurant.objects.get(id=restaurant_id)
@@ -173,8 +176,7 @@ def tables(request):
         return redirect("/business/tables/")
 
 
-
-
+@restrict_access
 def holidays(request):
     restaurant_id = request.session["selected_restaurant_id"] 
     restaurant = Restaurant.objects.get(id=restaurant_id)
@@ -209,13 +211,7 @@ def holidays(request):
 
         return redirect("/business/holidays/")
 
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Restaurant, Review
-from .forms import ReviewForm
-
-
+@restrict_access
 def reviews(request):
     restaurant_id = request.session["selected_restaurant_id"]
     restaurant = Restaurant.objects.get(id=restaurant_id)
@@ -243,7 +239,7 @@ def reviews(request):
 
         return redirect("/business/reviews/")
 
-
+@restrict_access
 def business_info(request):
     if request.method == "GET":
         form = RestaurantForm()
@@ -277,7 +273,7 @@ def business_info(request):
 
         return redirect("/business/business-info/")
 
-
+@restrict_access
 def reservations(request):
     restaurant = Restaurant.objects.get(id=request.session["selected_restaurant_id"])
     all_reservations = Booking.objects.filter(restaurant=restaurant).all()
@@ -285,7 +281,7 @@ def reservations(request):
         request, "Restaurants/reservations.html", {"reservations": all_reservations}
     )
 
-
+@restrict_access
 def switch_business(request):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -304,6 +300,7 @@ def switch_business(request):
 # -------------------------------
 # Mark Booking as Finished
 # -------------------------------
+@restrict_access
 def markfinish(request):
     if request.method == "POST":
         booking_id = request.POST.get("booking_id")
@@ -321,6 +318,7 @@ def markfinish(request):
 # -------------------------------
 # Mark Booking as Cancelled
 # -------------------------------
+@restrict_access
 def markcancel(request):
     if request.method == "POST":
         booking_id = request.POST.get("booking_id")
@@ -338,6 +336,7 @@ def markcancel(request):
 # -------------------------------
 # Hide Review
 # -------------------------------
+@restrict_access
 def hide(request):
     if request.method == "POST":
         review_id = request.POST.get("review_id")
@@ -352,6 +351,7 @@ def hide(request):
 # -------------------------------
 # Unhide Review
 # -------------------------------
+@restrict_access
 def unhide(request):
     if request.method == "POST":
         review_id = request.POST.get("review_id")
@@ -364,6 +364,7 @@ def unhide(request):
 
 
 # --- Update Functions ---
+@restrict_access
 def updateBusiness(request, id):
     if request.method == "POST":
         instance = get_object_or_404(Restaurant, id=id)
@@ -378,7 +379,7 @@ def updateBusiness(request, id):
         )
         return JsonResponse({"status": "success", "message": "Business updated"})
 
-
+@restrict_access
 def updateTables(request, id):
     if request.method == "POST":
         instance = get_object_or_404(Table, id=id)
@@ -394,7 +395,7 @@ def updateTables(request, id):
         return JsonResponse({"status": "success", "message": "Table updated"})
     return redirect("/business/tables")
 
-
+@restrict_access
 def updateHolidays(request, id):
     if request.method == "POST":
         instance = get_object_or_404(SpecialDay, id=id)
@@ -411,6 +412,7 @@ def updateHolidays(request, id):
 
 
 # --- Delete Functions ---
+@restrict_access
 def deleteBusiness(request, id):
     if request.method == "POST":
         instance = get_object_or_404(Restaurant, id=id)
@@ -419,6 +421,7 @@ def deleteBusiness(request, id):
         return redirect("/business/business-info/")
 
 
+@restrict_access
 def deleteTables(request, id):
     if request.method == "POST":
         instance = get_object_or_404(Table, id=id)
@@ -427,6 +430,7 @@ def deleteTables(request, id):
         return redirect("/business/tables/")
 
 
+@restrict_access
 def deleteHolidays(request, id):
     if request.method == "POST":
         instance = get_object_or_404(SpecialDay, id=id)
@@ -435,8 +439,7 @@ def deleteHolidays(request, id):
         return redirect("/business/holidays/")
 
 
-
-
+@restrict_access
 def download_logs(request):
     if not request.user.is_authenticated:
         return HttpResponse("Unauthorized", status=401)

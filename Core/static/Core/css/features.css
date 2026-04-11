@@ -145,3 +145,70 @@
     .feature-section { padding: 40px 5%; }
     .floating-badge { width: 200px; } /* Make badge responsive on small phones */
 }
+
+
+.sr-header-flex {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+
+/* Container for the entire search section */
+.sr-search-section {
+    padding: 60px 5%;
+    background-color: #f9f9f9; /* Light background to distinguish from hero */
+    min-height: 80vh;
+}
+
+.sr-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sr-results-title {
+    font-size: 2rem;
+    margin-bottom: 40px;
+    color: #333;
+}
+
+.sr-highlight {
+    color: var(--ternary-color);
+}
+
+/* The Grid Logic */
+.sr-results-grid {
+    display: grid !important; /* Forces grid if a parent is using flex */
+    /* Creates columns that are at least 320px, but no more than 1fr */
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+    gap: 30px;
+    width: 100%;
+}
+
+/* This fixes the "squashing" issue */
+.sr-card-wrapper {
+    width: 100%;
+    display: block;
+}
+
+/* Ensure the card itself doesn't have a tiny fixed width */
+.sr-card-wrapper > div {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+.sr-clear-btn {
+    text-decoration: none;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .sr-results-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sr-results-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

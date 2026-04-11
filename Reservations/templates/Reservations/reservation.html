@@ -277,7 +277,12 @@
         <p style="font-size: 0.8rem; color: #888; margin-bottom: 20px;">* Includes 5-minute table lock guarantee</p>
         <button class="reserve-lock-btn"
             style="width: 100%; background: #111827; color: white; padding: 18px; border-radius: 10px; font-weight: bold; border: none; cursor: pointer;"
-            onclick="submitReservation()">
+            {% if request.user.is_authenticated %}
+            onclick="submitReservation()"
+            {% else %}
+            onclick="window.location.href='/uh/auth'"
+            {% endif %}
+            >
             RESERVE AND LOCK
         </button>
     </div>

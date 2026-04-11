@@ -168,6 +168,10 @@ nav p {
     color: #333;
 
 }
+.search-input:focus {
+    outline: none !important;
+    border: none !important;
+}
 
 .search-input::placeholder {
     font-style: italic;

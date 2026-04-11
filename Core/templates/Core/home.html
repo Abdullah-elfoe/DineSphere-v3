@@ -32,20 +32,20 @@
                 {% else %}
                 <li><a href="/business/registration">Register</a></li>
                 {% endif %}
-                <li><a href="/profile">profile</a></li>
+                <li><a href="/profile">Profile</a></li>
             </ul>
             <div class="nav-actions">
                 {% if request.user.is_authenticated %}
                 <form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: inline;">
                     {% csrf_token %}
                     <button type="button" id="openLogoutModal" style="background: none; border: none;">
-                        
+
                         {% if request.user.image.url %}
                         <img src="{{ request.user.image.url }}" alt=""
                             style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid white; object-fit: cover;">
                         {% else %}
                         <img src="https://placehold.co/40x40/008000/D88938?text={{ request.user.username|initials }}" "
-                            style="border-radius: 50%; border: 1px solid white;">
+                            style=" border-radius: 50%; border: 1px solid white;">
                         {% endif %}
                     </button>
                 </form>
@@ -74,28 +74,56 @@
                 <div>Dineshpere is a modern dining and restaurant discovery platform designed to make eating out
                     effortless, exciting, and memorable. It bridges the gap between foodies and restaurants, ensuring a
                     smooth dining experience from search to seat.</div>
-                <div class="search-bar">
-                    <select class="city-select" disabled>
-                        <option>Karachi</option>
+                <!-- <div class="search-bar"> -->
+                <form action="{% url 'search' %}#search-page" method="get" class="search-bar">
+                    <select class="city-select" name="city">
+                        <option value="">Select City</option>
+                        <option value="karachi">Karachi</option>
+                        <option value="islamabad">Islamabad</option>
+                        <option value="lahore">Lahore</option>
+                        <option value="matli">Matli</option>
                     </select>
                     <input type="text" class="search-input" id="thesearchbar" placeholder="Cuisine, restaurant name..."
-                        oninput="switchContent()">
-                    <button class="search-btn">SEARCH</button>
-                </div>
+                        name="searched-restaurant" required>
+                    <button class="search-btn" type="submit">SEARCH</button>
+                </form>
+                <!-- </div> -->
             </div>
         </div>
     </div>
-    <section id="search-page" style="display: none;">
-        <div id="searchResultsContainer" class="results-list">
-            {% for restaurant, review, mp in combined %}
-            {% include "Core/restaurant_card.html" with restaurant=restaurant review=review mp=mp is_search=True
-            %}
+    {% if results %}
+    <section id="search-page" class="sr-search-section">
+    <div class="sr-container">
+        
+        <div class="sr-header-flex">
+            <h2 class="sr-results-title">
+                {{ count }} Search results for <span class="sr-highlight">"{{ query }}"</span> 
+                {% if city %}in {{ city }}{% endif %}
+            </h2>
+            
+            <a href="{% url 'home' %}" class="sr-clear-btn feature-btn" >
+                <span>✕</span> Clear Search
+            </a>
+        </div>
+
+        <div id="searchResultsContainer" class="sr-results-grid">
+            {% for restaurant, review, mp in results %}
+                <div class="sr-card-wrapper">
+                    {% include "Core/restaurant_card.html" with restaurant=restaurant review=review mp=mp is_favourite=restaurant.is_favourite %}
+                </div>
+            {% empty %}
+                <div class="sr-no-results">
+                    <p>No restaurants found matching your search.</p>
+                    <a href="{% url 'home' %}" class="sr-text-link">Return to all restaurants</a>
+                </div>
             {% endfor %}
         </div>
-    </section>
+    </div>
+</section>
+    {% elif not results %}
     <section id="main-page" style="padding-top: 50px;">
         <div class="carousels">
-   
+
 
             <div class="carousel" id="favorites-carousel">
                 <h1 class="carousel-title">Your Favourites</h1>
@@ -103,7 +131,8 @@
                     <div class="carousel-track" id="fav-track">
                         {% for restaurant, review, mp in favorite_combined %}
 
-                        {% include "Core/restaurant_card.html" with restaurant=restaurant review=review mp=mp is_favourite=True %}
+                        {% include "Core/restaurant_card.html" with restaurant=restaurant review=review mp=mp
+                        is_favourite=True %}
                         {% empty %}
                         <div style="text-align: center; padding: 20px; color: #666;">
                             <p>No favourite restaurants yet. Add some by clicking the heart icon!</p>
@@ -118,10 +147,10 @@
                 <h1 class="carousel-title">Cheap Ones</h1>
                 <div class="carousel-container">
                     <div class="carousel-track">
-                        {% for restaurant, review,  mp in combined %}
-                      
+                        {% for restaurant, review, mp in combined %}
+
                         {% include "Core/restaurant_card.html" with restaurant=restaurant review=review mp=mp %}
-          
+
                         {% endfor %}
                     </div>
                     <button class="carousel-btn btn-left">&#10094;</button>
@@ -133,7 +162,7 @@
                 <h1 class="carousel-title">Top Restaurants</h1>
                 <div class="carousel-container">
                     <div class="carousel-track">
-                        {% for restaurant, review,  mp in combined %}
+                        {% for restaurant, review, mp in combined %}
                         {% if review.average_rating >= 4.0 %}
                         {% include "Core/restaurant_card.html" with restaurant=restaurant review=review mp=mp %}
                         {% endif %}
@@ -144,22 +173,22 @@
                 </div>
             </div>
 
-            
+
         </div>
     </section>
+    {% endif %}
     <section class="feature-section">
         <div class="feature-container">
             <div class="feature-image-block">
                 <div class="main-image-wrapper">
-                    <img src="{% static 'Core/images/me.jpeg' %}"
-                        alt="DineSphere User" class="feature-img">
+                    <img src="{% static 'Core/images/me.jpeg' %}" alt="DineSphere User" class="feature-img">
 
                     <div class="floating-badge">
                         <p class="badge-title">100k+ Verified Users</p>
-                        
+
                         <div class="user-list">
-                              {% for user in three_users %}
-                              <div class="user-item">
+                            {% for user in three_users %}
+                            <div class="user-item">
                                 {% if user.user.image %}
                                 <img src="{{user.user.image.url}}" alt="User">
                                 {% else %}
@@ -171,7 +200,7 @@
                                 </div>
                             </div>
                             {% endfor %}
-                            
+
                         </div>
                     </div>
                 </div>
@@ -184,7 +213,24 @@
                     Just like we said before, we have tons of features to manage your dining preferences,
                     monthly restaurant visits, and effortless reservations.
                 </p>
-                <button class="feature-btn" onclick="window.location.href='/business/registration'">Register</button>
+
+                {% if not request.user.is_authenticated %}
+                <button class="feature-btn" onclick="window.location.href='/business/registration'">
+                    Register
+                </button>
+                {% elif request.user|is_owner %}
+                <button class="feature-btn" onclick="window.location.href='/business/'">
+                    View my business
+                </button>
+                {% elif request.user|is_staff %}
+                <button class="feature-btn" onclick="window.location.href='/business/reservations/'">
+                    See Today's Work
+                </button>
+                {% else %}
+                <button class="feature-btn" onclick="window.location.href='/business/'">
+                    Register
+                </button>
+                {% endif %}
             </div>
         </div>
     </section>
@@ -196,7 +242,7 @@
             <li><a href="/">Home</a></li>
             <li><a href="/">About</a></li>
             <li><a href="/business/registration"">Register</a></li>
-            <li><a href="/profile">profile</a></li>
+            <li><a href=" /profile">Profile</a></li>
             {% if request.user.is_authenticated %}
             <li><a href="{% url 'logout' %}">Logout</a></li>
             {% else %}

@@ -4,6 +4,7 @@ from django.db.models import ForeignKey, ManyToManyField, BooleanField, FileFiel
 from Reservations.models import Booking
 from django.db.models import Sum, Count, Q
 
+
 from .forms import *
 def create_restaurant(data):
     restaurant = Restaurant.objects.create(
@@ -262,6 +263,12 @@ def isStaff(user):
     return RestaurantStaff.objects.filter(
         user=user,
         role="STAFF"
+    ).exists()
+
+def isOwner(user):
+    return RestaurantStaff.objects.filter(
+        user=user,
+        role="OWNER"
     ).exists()
 
 

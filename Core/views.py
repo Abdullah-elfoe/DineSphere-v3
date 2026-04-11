@@ -1,11 +1,11 @@
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from Restaurants.models import Restaurant, FavouriteRestaurant
-from django.shortcuts import get_object_or_404
 from Reservations.models import Booking
 from UsersHandling.models import CustomerProfile
 from django.db import models
+from django.db.models import Q
 from .utils import build_combined
 
 
@@ -56,17 +56,6 @@ def home_page(request):
         "three_users": three_users 
     })
 
-def about_page(request):
-    return HttpResponse("This is the about page of Dinesphere.")
-
-def signup_user(request):
-    return HttpResponse("Signup page")
-
-def login_user(request):
-    return HttpResponse("Login page")   
-
-def logout_user(request):
-    return HttpResponse("Logout page")  
 
 def profile(request):
     if not request.user.is_authenticated:
@@ -105,3 +94,46 @@ def toggle_favourite(request):
         return JsonResponse({"success": True, "favourited": favourited})
 
     return JsonResponse({"success": False, "error": "Invalid request method"})
+
+
+# from django.shortcuts import render
+
+def search(request):
+    query = (request.GET.get("searched-restaurant") or "").strip()
+    city = (request.GET.get("city") or "").strip()
+
+    restaurants = Restaurant.objects.all()
+
+    if city:
+        restaurants = restaurants.filter(city__iexact=city)
+
+    if query:
+        words = query.split()
+
+        for word in words:
+            restaurants = restaurants.filter(
+                Q(name__icontains=word) |
+                Q(title__icontains=word) |
+                Q(about_restaurant__icontains=word)
+            )
+
+    restaurants = restaurants.distinct()
+    total = restaurants.count()
+    if request.user.is_authenticated:
+        user_favs = FavouriteRestaurant.objects.filter(user=request.user).values_list('restaurant_id', flat=True)
+        restaurants = restaurants.annotate(
+                is_favourite=models.Case(
+                    models.When(id__in=user_favs, then=models.Value(True)),
+                    default=models.Value(False),
+                    output_field=models.BooleanField()
+                )
+            )
+        
+    combined = build_combined(restaurants)
+
+    return render(request, "Core/home.html", {
+        "results": combined,
+        "count": total,
+        "query": query,
+        "city": city.capitalize() if city else None,
+    })
