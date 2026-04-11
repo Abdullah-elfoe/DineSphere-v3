@@ -102,7 +102,8 @@ def search(request):
     query = (request.GET.get("searched-restaurant") or "").strip()
     city = (request.GET.get("city") or "").strip()
 
-    restaurants = Restaurant.objects.all()
+    restaurants = Restaurant.objects.filter(is_approved=True)
+
 
     if city:
         restaurants = restaurants.filter(city__iexact=city)
