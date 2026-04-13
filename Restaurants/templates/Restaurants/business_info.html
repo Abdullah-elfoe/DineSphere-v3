@@ -14,7 +14,7 @@
     </div>
     <div class="card-content">
         <span class="card-label">Add Entry</span>
-        <span class="card-value">$560K</span>
+        <span class="card-value">Register</span>
     </div>
     <i class="fas fa-circle-notch progress-mini"></i>
 </div>
@@ -25,7 +25,7 @@
     </div>
     <div class="card-content">
         <span class="card-label">Update Data</span>
-        <span class="card-value">$185K</span>
+        <span class="card-value">Modify</span>
     </div>
     <i class="fas fa-chart-line progress-mini"></i>
 </div>
@@ -35,8 +35,8 @@
         <i class="fas fa-trash-alt"></i>
     </div>
     <div class="card-content">
-        <span class="card-label">Delete Log</span>
-        <span class="card-value">$150K</span>
+        <span class="card-label">Delete</span>
+        <span class="card-value">Remove</span>
     </div>
     <i class="fas fa-bolt progress-mini"></i>
 </div>
@@ -46,7 +46,7 @@
     </div>
     <div class="card-content">
         <span class="card-label">Refresh</span>
-        <span class="card-value">$742K</span>
+        <span class="card-value">Reload</span>
     </div>
     <i class="fas fa-pie-chart progress-mini"></i>
 </div>
@@ -72,7 +72,7 @@
 
         <div class="filter-group">
             <span class="filter-label">Label</span>
-            <select class="custom-select">
+            <select class="custom-select" disabled>
                 <option value="all">All Styles</option>
                 <option value="adventure">Adventure</option>
                 <option value="iconic">Iconic</option>
@@ -82,15 +82,15 @@
 
         <div class="filter-group toggle-filter">
             <label class="checkbox-wrapper">
-                <input type="checkbox" checked> Available
+                <input type="checkbox" disabled> Available
             </label>
             <label class="checkbox-wrapper">
-                <input type="checkbox"> Budget (Cheap)
+                <input type="checkbox" disabled> Budget (Cheap)
             </label>
         </div>
 
         <div class="filter-group">
-            <input type="text" class="custom-select" placeholder="Search items..." style="width: 200px;">
+            <input type="text" class="custom-select" placeholder="Search items..." style="width: 200px;" disabled>
         </div>
     </header>
 
@@ -122,15 +122,16 @@
 
             >
             <div class="item-image">
+                <img src="{{restaurant.image.url}}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                 
             </div>
             
             <div class="item-content">
                 <div>
-                    <span class="item-label">Adventure</span>
+                    <span class="item-label">{{restaurant.title}}</span>
                     <h3 class="item-title">{{ restaurant.name }}</h3>
                 </div>
-                <div class="item-price">${{restaurant.city}}</div>
+                <div class="item-price">{{restaurant.city}}</div>
             </div>
         </div>
 

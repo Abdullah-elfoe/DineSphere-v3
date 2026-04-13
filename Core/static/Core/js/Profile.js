@@ -17,6 +17,7 @@ function openTab(evt, tabName) {
     // Show the specific tab and mark button as active
     document.getElementById(tabName).style.display = "block";
     document.getElementById(tabName).classList.add("active");
+    console.log(tabName, document.getElementById(tabName));
     evt.currentTarget.classList.add("active");
 }
 
@@ -38,6 +39,6 @@ function closeModal() {
 document.getElementById("confirmCancelBtn").onclick = function() {
     if (currentCancelId) {
         // Redirect to cancel URL (Django view should handle cancellation)
-        window.location.href = `/cancel-booking/${currentCancelId}/`;
+        window.location.href = `/reservation/cancel-booking/${currentCancelId}/`;
     }
 };

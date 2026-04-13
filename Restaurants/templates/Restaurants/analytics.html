@@ -1,5 +1,6 @@
 {% extends "Restaurants/base.html" %}
 {% load static %}
+{% load range_tags %}
 {% load auth_tags %}
 {% block title %} Analytics {% endblock %}
 {% block name %} Analytics {% endblock %}
@@ -188,7 +189,15 @@
         <div id="tab-logs" class="tab-content" style="display: {% if not active_dynamic_tab %}block{% else %}none{% endif %};">
             <div class="post-table">
                 <div class="post-table-row">
-                    <div class="table-img"><img src="{{ CP__OwnerProfile.image.url }}" alt=""></div>
+                    <div class="table-img">
+                    
+                        {% if CP__OwnerProfile.image %}
+                        <img src="{{ CP__OwnerProfile.image.url }}" alt="" class="profile-pic">
+                        {% else %}
+                        <img src="https://placehold.co/40x40/008000/D88938?text={{ request.user.username|initials }}"
+                        class="profile-avatar">
+                        {% endif %}
+                    </div>
                     <div class="table-post-info-cell">
                         <div class="table-post-title">{{ CP__OwnerProfile}}</div>
                         <div class="table-post-sub"></div>

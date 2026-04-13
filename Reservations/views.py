@@ -138,3 +138,14 @@ def get_unavailable_tables(request):
     return JsonResponse({
         "booked_tables": list(booked_table_ids)
     })
+
+
+def cancel_booking(request, booking_id):
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    booking = Booking.objects.filter(id=booking_id, customer=request.user).first()
+    if booking.status == Booking.STATUS_PENDING:
+        booking.status = Booking.STATUS_CANCELLED
+        booking.save()
+    return redirect("profile")

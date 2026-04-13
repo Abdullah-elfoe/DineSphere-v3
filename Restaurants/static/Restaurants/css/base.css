@@ -146,7 +146,7 @@
             height: 100%;
             object-fit: cover;
         }
-                .main-content {
+        .main-content {
             flex-grow: 1;
             padding: 30px;
             overflow-y: auto;
